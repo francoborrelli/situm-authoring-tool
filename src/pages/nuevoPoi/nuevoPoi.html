@@ -2,27 +2,27 @@
   <ion-card-content>
     <ion-row [hidden]="keyword && keyword.isOpen()">
       <ion-col col-6 colSixNoPadding>
-        <ion-item style="padding-left:0px">
-          <ion-thumbnail item-start style="margin:0; padding:0px;">
+        <ion-item style="padding-left: 0px">
+          <ion-thumbnail item-start style="margin: 0; padding: 0px">
             <div *ngIf="nuevoPoi.infoHtml">
               <img
                 [src]="nuevoPoi.infoHtml"
                 [(ngModel)]="nuevoPoi.infoHtml"
                 ngDefaultControl
-                style="width:100%; height: 100%;"
+                style="width: 100%; height: 100%"
               />
             </div>
             <div *ngIf="!nuevoPoi.infoHtml">
               <img
                 src="assets/img/loadImagePlease.png"
-                style="width:100%; height: 100%;"
+                style="width: 100%; height: 100%"
               />
             </div>
           </ion-thumbnail>
         </ion-item>
       </ion-col>
       <ion-col col-6>
-        <ion-item style="margin:0px; padding-left:0px">
+        <ion-item style="margin: 0px; padding-left: 0px">
           <button
             ion-button
             block
@@ -30,15 +30,15 @@
             full
             color="myBlueColour"
             (click)="tomarFoto()"
-            style="width: 100% !important; margin-top:0% !important;"
+            style="width: 100% !important; margin-top: 0% !important"
           >
             <ion-icon ios="ios-camera" md="md-camera"></ion-icon>
             Tomar foto
           </button>
         </ion-item>
-        <ion-item text-wrap style="margin-top:0px; padding-left:0px;">
+        <ion-item text-wrap style="margin-top: 0px; padding-left: 0px">
           <div style="color: red; font-size: 1.7 !important">
-            <span style="color:black!important; font-weight: bold !important"
+            <span style="color: black !important; font-weight: bold !important"
               >Nota:</span
             >
             Se recomienda en forma horizontal y todos los campos son requeridos.
@@ -46,7 +46,7 @@
         </ion-item>
       </ion-col>
     </ion-row>
-    <ion-item style="padding-left:0px; padding-top: 2%">
+    <ion-item style="padding-left: 0px; padding-top: 2%" *ngIf="!isFreeGame">
       <ion-label color="myBlueColour" stacked>Nombre / Título:</ion-label>
       <ion-input
         type="text"
@@ -57,7 +57,7 @@
         >{{ nuevoPoi.poiName }}</ion-input
       >
     </ion-item>
-    <ion-item style="padding-left:0px;">
+    <ion-item style="padding-left: 0px" *ngIf="!isFreeGame">
       <ion-label color="myBlueColour" stacked>Descripción:</ion-label>
       <ion-textarea
         type="text"
@@ -69,7 +69,7 @@
       >
     </ion-item>
 
-    <ion-item style="padding-left:0px;" *ngIf="hasQuestions">
+    <ion-item style="padding-left: 0px" *ngIf="hasQuestions">
       <ion-label color="myBlueColour" stacked>Pregunta:</ion-label>
       <ion-textarea
         type="text"
@@ -83,12 +83,14 @@
 
     <ion-list radio-group [(ngModel)]="nuevoPoi.answer" *ngIf="hasQuestions">
       <ion-list-header
-        style="padding-left: 0px;
-      margin-bottom: 0px;
-      margin-top: -19px;
-      border-top: none;
-      color: #1576C9;
-      font-size: 12px;"
+        style="
+          padding-left: 0px;
+          margin-bottom: 0px;
+          margin-top: -19px;
+          border-top: none;
+          color: #1576c9;
+          font-size: 12px;
+        "
       >
         Respuesta:
       </ion-list-header>
@@ -104,10 +106,10 @@
       </ion-item>
     </ion-list>
 
-    <ion-item style="padding-left:0px;">
+    <ion-item style="padding-left: 0px">
       <ion-label style="color: black">Brindar el PoI:</ion-label>
       <ion-select
-        style="max-width: 100%;"
+        style="max-width: 100%"
         (ionChange)="printElection($event)"
         class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
         [(ngModel)]="qrOptionSelected"
@@ -124,7 +126,7 @@
       <button
         ion-button
         color="myBlueColour"
-        [disabled]="
+        [disabled]="isFreeGame ? false :
           !nuevoPoi.infoHtml ||
           !nuevoPoi.poiName ||
           !nuevoPoi.category ||

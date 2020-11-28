@@ -8,9 +8,8 @@ import {
   Keyboard,
 } from 'ionic-angular';
 
-import { Camera, CameraOptions } from '@ionic-native/camera';
-
-import { Poi, PoisService } from '../../services/pois.service';
+import { Camera } from '@ionic-native/camera';
+import { PoisService } from '../../services/pois.service';
 
 import {
   Workspace,
@@ -26,16 +25,16 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner'; //lee QR
 declare var cordova: any;
 
 @Component({
-  selector: 'page-nuevoPoi',
-  templateUrl: 'nuevoPoi.html',
+  selector: 'add-question',
+  templateUrl: 'addQuestion.html',
 })
-export class NuevoPoiPage {
-  nuevoPoi: Poi;
+export class AddQuestion {
+  newQuestion: any;
   workspace: Workspace;
   qrOptionSelected: any;
   qrAutorizado: boolean;
   ionApp: any;
-  pagenuevopoi: any;
+  pagenewQuestion: any;
   ionModal: any;
   options: any;
   modelQRPoi: string;
@@ -47,7 +46,6 @@ export class NuevoPoiPage {
     public params: NavParams,
     private viewCtrl: ViewController,
     private navParams: NavParams,
-    private camera: Camera,
     private alertCtrl: AlertController,
     private qrScanner: QRScanner,
     private loadingCtrl: LoadingController,
@@ -55,16 +53,16 @@ export class NuevoPoiPage {
     private keyboard: Keyboard,
     private workspaceService: WorkspaceService
   ) {
-    this.nuevoPoi = this.navParams.get('nuevoPoi');
     this.workspace = this.navParams.get('workspace');
     this.loggedUser = this.navParams.get('loggedUser');
-    console.log(this.workspace);
     this.qrAutorizado = false;
-    this.options = ['Usando WLAN', 'Nuevo QR', 'QR Existente'];
-    this.qrOptionSelected = 'Usando WLAN';
 
-    this.nuevoPoi.poiName = '';
-    this.nuevoPoi.hasQRCode = false;
+    this.newQuestion = {
+      options: [
+        { name: '', correct: '' },
+        { name: '', correct: '' },
+      ],
+    };
 
     this.modelQRPoi = 'A';
     this.workspaceService.subscribeToWorkspaceStateChangesFromModal(
@@ -77,8 +75,8 @@ export class NuevoPoiPage {
 
   okEncrypt(aBase64, loading) {
     loading.dismiss();
-    this.nuevoPoi.base64 = aBase64;
-    this.workspace.status.addPoi(this, this.isOwner(), this.nuevoPoi); //STATE PATTERN
+    this.newQuestion.base64 = aBase64;
+    this.workspace.status.addPoi(this, this.isOwner(), this.newQuestion); //STATE PATTERN
   }
 
   notOkEncrypt(loading, err) {
@@ -90,9 +88,27 @@ export class NuevoPoiPage {
     );
   }
 
+  addControl() {
+    this.newQuestion.options = [
+      ...this.newQuestion.options,
+      { name: '', correct: '' },
+    ];
+  }
+
+  removeControl(control) {
+    this.newQuestion.options = this.newQuestion.options.filter(
+      (a) => a !== control
+    );
+  }
+
   dismissWithoutSave() {
     //CIERRO SIN GUARDAR
-    this.blankPoi();
+    this.newQuestion = {
+      options: [
+        { name: '', correct: '' },
+        { name: '', correct: '' },
+      ],
+    };
     this.viewCtrl.dismiss(undefined);
   }
 
@@ -124,17 +140,11 @@ export class NuevoPoiPage {
     alert.present();
   }
 
-  blankPoi() {
-    this.nuevoPoi.poiName = '';
-    this.nuevoPoi.category = '';
-    this.nuevoPoi.infoHtml = '';
-  }
-
   closeQRScanner() {
     this.qrScanner.destroy();
     this.qrAutorizado = false;
     this.unregisterBackButtonAction && this.unregisterBackButtonAction();
-    if (this.nuevoPoi.QRCodeID == ' ') {
+    if (this.newQuestion.QRCodeID == ' ') {
       //NO SE MODIFICÓ
       this.qrOptionSelected = 'Usando WLAN';
       this.alertText(
@@ -155,14 +165,14 @@ export class NuevoPoiPage {
           this.ionApp = <HTMLElement>(
             document.getElementsByTagName('ion-app')[0]
           );
-          this.pagenuevopoi = <HTMLElement>(
-            document.getElementsByTagName('page-nuevopoi')[0]
+          this.pagenewQuestion = <HTMLElement>(
+            document.getElementsByTagName('page-newQuestion')[0]
           );
           this.ionModal = <HTMLElement>(
             document.getElementsByTagName('ion-modal')[0]
           );
           this.ionApp.style.opacity = '0';
-          this.pagenuevopoi.style.opacity = '0';
+          this.pagenewQuestion.style.opacity = '0';
           this.ionModal.style.opacity = '0';
           // camera permission was granted
           // start scanning
@@ -170,11 +180,11 @@ export class NuevoPoiPage {
             //var splitted = text.split(" ", 3);
             //console.log(splitted);
             this.ionApp.style.opacity = '1';
-            this.pagenuevopoi.style.opacity = '1';
+            this.pagenewQuestion.style.opacity = '1';
             this.ionModal.style.opacity = '1';
-            this.nuevoPoi.hasQRCode = true;
+            this.newQuestion.hasQRCode = true;
 
-            this.nuevoPoi.QRCodeID = text.toString();
+            this.newQuestion.QRCodeID = text.toString();
 
             //this.alertText("LO ESCANEADO:", text.toString());
             this.qrScanner.hide(); // hide camera preview
@@ -245,83 +255,34 @@ export class NuevoPoiPage {
   private customHandleBackButton(): void {
     this.closeQRScanner();
     this.ionApp.style.opacity = '1';
-    this.pagenuevopoi.style.opacity = '1';
+    this.pagenewQuestion.style.opacity = '1';
     this.ionModal.style.opacity = '1';
   }
 
-  private acceptAddPoi() {
-    this.modelQRPoi = this.nuevoPoi.poiName;
+  public acceptAddPoi() {
+    this.modelQRPoi = this.newQuestion.poiName;
     let loading;
-    this.nuevoPoi.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
-    if (this.nuevoPoi.hasQRCode) {
+    this.newQuestion.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
+    if (this.newQuestion.hasQRCode) {
       loading = this.createLoading('Encriptando QR');
       loading.present();
       this.poisService
-        .encriptQR(this.nuevoPoi, this, loading)
+        .encriptQR(this.newQuestion, this, loading)
         .then((result) => {});
     } else {
-      this.workspace.status.addPoi(this, this.isOwner(), this.nuevoPoi); //STATE PATTERN
+      this.workspace.status.addPoi(this, this.isOwner(), this.newQuestion); //STATE PATTERN
     }
-  }
-
-  private printElection(anElection) {
-    this.nuevoPoi.QRCodeID = ' ';
-
-    if (anElection == 'Usando WLAN') {
-      this.nuevoPoi.hasQRCode = false;
-    } else {
-      if (anElection == 'QR Existente') {
-        this.scanToUseExistingQR(); //ALGUN QR QUE YA EXISTA (DEBERIA SER HASHEADO)
-      }
-      if (anElection == 'Nuevo QR') {
-        this.nuevoPoi.QRCodeID = this.nuevoPoi.poiName; //EL NOMBRE (DEBERIA SER HASHEADO)
-      }
-      this.nuevoPoi.hasQRCode = true;
-    }
-  }
-
-  private tomarFoto() {
-    const options: CameraOptions = {
-      quality: 60,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      encodingType: this.camera.EncodingType.PNG,
-      mediaType: this.camera.MediaType.PICTURE,
-      targetWidth: 800,
-      targetHeight: 600,
-    };
-    this.camera.getPicture(options).then(
-      (imageData) => {
-        // imageData is either a base64 encoded string or a file URI
-        // If it's base64:
-        this.nuevoPoi.infoHtml = 'data:image/jpeg;base64,' + imageData;
-      },
-      (err) => {
-        // Handle error
-      }
-    );
   }
 
   get hasQuestions() {
     const { kind } = this.workspace;
-    return (
-      kind &&
-      kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
-      this.workspace.configuration.type === 'positionated'
-    );
-  }
-
-  get isFreeGame() {
-    const { kind } = this.workspace;
-    return (
-      kind &&
-      kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
-      this.workspace.configuration.type === 'free'
-    );
+    return kind && kind.idKind === 'CrearLugaresRelevantesConPreguntas';
   }
 
   get completeQuestion() {
     return (
-      !this.hasQuestions || (this.nuevoPoi.question && this.nuevoPoi.answer)
+      !this.hasQuestions ||
+      (this.newQuestion.question && this.newQuestion.answer)
     );
   }
 }

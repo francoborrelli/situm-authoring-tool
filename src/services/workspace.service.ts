@@ -184,6 +184,7 @@ export class Workspace {
   building: Building;
   status: WorkspaceStatus;
   kind: Kind;
+  configuration?: any;
   positioning: SensingMechanism;
   strategyToShowPoIWLAN?: StrategyToShowMarker;
   strategyToShowPoIQR?: StrategyToShowMarker;
@@ -297,7 +298,7 @@ export class WorkspaceService {
 
   public getWorkspaceFromReference(workspaceReference) {
     return new Promise<Workspace>((result) => {
-      debugger; //VALOR DEL OBJETO
+      //VALOR DEL OBJETO
       var ref = this.angularfirebaseDB.database.ref(
         'workspaces/' +
           workspaceReference.idOwner +
@@ -327,7 +328,6 @@ export class WorkspaceService {
         this.tabla + workspaceRef.idOwner + '/' + workspaceRef.idWorkspace
       );
       workspaceReference.once('value').then(function (snapshot) {
-        debugger;
         resPromesa(snapshot.val());
       });
     });
@@ -356,11 +356,9 @@ export class WorkspaceService {
     return new Promise<boolean>((resPromesa) => {
       this.buildingService.saveBuilding(aBuilding).then(
         (resolve) => {
-          debugger;
           resPromesa(true);
         },
         (reject) => {
-          debugger;
           resPromesa(false);
         }
       );
@@ -369,7 +367,6 @@ export class WorkspaceService {
 
   public saveWorkspace(aWorkspace) {
     return new Promise<boolean>((resPromesa) => {
-      debugger;
       let building = aWorkspace.building[0];
       aWorkspace.building = null;
       this.angularfirebaseDB.database
@@ -379,11 +376,9 @@ export class WorkspaceService {
         .set(aWorkspace)
         .then(
           (resolve) => {
-            debugger;
             resPromesa(this.saveABuilding(building));
           },
           (reject) => {
-            debugger;
             resPromesa(false);
           }
         );
@@ -407,7 +402,6 @@ export class WorkspaceService {
         .valueChanges()
         .subscribe(
           (response) => {
-            debugger;
             //resPromesa(response[0]);
             aPage.updateWorkspaceState(response[0]);
           },
@@ -438,7 +432,6 @@ export class WorkspaceService {
         .valueChanges()
         .subscribe(
           (response) => {
-            debugger;
             let params = new Params();
             params.idWorkspace = aWorkspace.idWorkspace.toString();
             params.idStatus = response[0].toString();
@@ -474,7 +467,6 @@ export class WorkspaceService {
         .valueChanges()
         .subscribe(
           (response) => {
-            debugger;
             if (workspaceAbiertoPrimeraVez) {
               workspaceAbiertoPrimeraVez = false;
               appComponents.setWorkspaceState(response[0]);
@@ -494,7 +486,6 @@ export class WorkspaceService {
 
   public updateWorkspaceState(aWorkspace, newStatus) {
     return new Promise<boolean>((resPromesa) => {
-      debugger;
       aWorkspace.building = null;
       this.angularfirebaseDB.database
         .ref(
@@ -508,11 +499,9 @@ export class WorkspaceService {
         .set(newStatus)
         .then(
           (resolve) => {
-            debugger;
             resPromesa(true);
           },
           (reject) => {
-            debugger;
             resPromesa(false);
           }
         );
@@ -521,14 +510,14 @@ export class WorkspaceService {
 
   /*public updateWorkspacePositioning(aWorkspace, newPos) {
         return new Promise<boolean>((resPromesa) => {
-            debugger;
+
             aWorkspace.building = null;
             this.angularfirebaseDB.database.ref(this.tabla + '/' + aWorkspace.idOwner + '/' + aWorkspace.idWorkspace + '/positioning/').set(newPos).then(
                 resolve => {
-                    debugger;
+
                     resPromesa(true);
                 }, reject => {
-                    debugger;
+
                     resPromesa(false);
                 });
         });
@@ -539,7 +528,6 @@ export class WorkspaceService {
     VersionFinalPublica,
     strategies
   ) {
-    debugger;
     let editedWorkspace = new Workspace(); //CREO UN WORKSPACE NUEVO
     //editedWorkspace = Object.assign({}, aWorkspace); //CLONO LO QUE TENÍA EL QUE QUIERO EDITAR
     editedWorkspace.applicationColour = aWorkspace.applicationColour;
@@ -583,11 +571,9 @@ export class WorkspaceService {
         })
         .then(
           (resolve) => {
-            debugger;
             resultadoPromesa(true);
           },
           (reject) => {
-            debugger;
             resultadoPromesa(false);
           }
         );
@@ -667,7 +653,6 @@ export class WorkspaceService {
   }
   public updateFinalUserOrCollaborator(wsRef, userData) {
     return new Promise<boolean>((resPromesa) => {
-      debugger;
       this.angularfirebaseDB.database
         .ref(
           this.tabla +
@@ -688,7 +673,6 @@ export class WorkspaceService {
             resPromesa(true);
           },
           (reject) => {
-            debugger;
             resPromesa(false);
           }
         );
@@ -696,7 +680,6 @@ export class WorkspaceService {
   }
 
   public getStrategyToShowInformation(aStringStrategyToShowInformation) {
-    debugger;
     switch (aStringStrategyToShowInformation) {
       case 'MostrarInformacionSiempreQueEstePosicionadoEnElEdificio': {
         return new MostrarInformacionSiempreQueEstePosicionadoEnElEdificio();

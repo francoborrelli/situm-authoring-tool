@@ -1,0 +1,130 @@
+<ion-card>
+  <ion-card-content>
+    <ion-item style="padding-left: 0px" *ngIf="hasQuestions">
+      <ion-label color="myBlueColour" stacked>Pregunta:</ion-label>
+      <ion-textarea
+        type="text"
+        min="5"
+        max="500"
+        placeholder="Esta es una pregunta para el PoI"
+        [(ngModel)]="newQuestion.question"
+        >{{ newQuestion.question }}</ion-textarea
+      >
+    </ion-item>
+
+    <ion-item style="padding-left: 0px">
+      <ion-label style="color: #1576c9; font-size: 12px"
+        >Tipo de Pregunta</ion-label
+      >
+      <ion-select
+        style="max-width: 100%"
+        placeholder="Seleccione"
+        cancelText="Cancelar"
+        [(ngModel)]="newQuestion.type"
+        class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
+      >
+        <ion-option value="TrueFalse"><p>Verdadero/Falso</p></ion-option>
+        <ion-option value="MultipleChoice">Multiple Choice</ion-option>
+        <ion-option value="Closed">Pregunta Cerrada</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ng-container *ngIf="newQuestion.type === 'MultipleChoice'">
+      <ion-item *ngFor="let control of newQuestion.options; let i = index">
+        <ion-input
+          required
+          type="text"
+          placeholder="Texto de la opción"
+          [(ngModel)]="control.text"
+        ></ion-input>
+        <button
+          *ngIf="newQuestion.options.length > 2"
+          ion-button
+          item-end
+          (click)="removeControl(control)"
+          color="danger"
+        >
+          <ion-icon ios="ios-remove-circle" md="md-remove-circle"></ion-icon>
+        </button>
+      </ion-item>
+
+      <div style="text-align: center" *ngIf="newQuestion.options.length < 4">
+        <button ion-button color="myBlueColour" (click)="addControl()">
+          Agregar otra opción
+        </button>
+      </div>
+    </ng-container>
+
+    <ion-list
+      radio-group
+      [(ngModel)]="newQuestion.trueFalseAnwser"
+      *ngIf="newQuestion.type === 'TrueFalse'"
+    >
+      <ion-list-header
+        style="
+          padding-left: 0px;
+          margin-bottom: 0px;
+          margin-top: -19px;
+          border-top: none;
+          color: #1576c9;
+          font-size: 12px;
+        "
+      >
+        Respuesta:
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label>Falso</ion-label>
+        <ion-radio value="false"></ion-radio>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Verdadero</ion-label>
+        <ion-radio value="true"></ion-radio>
+      </ion-item>
+
+      <ion-item
+        style="padding-left: 0px"
+        *ngIf="newQuestion.type === 'TrueFalse'"
+      >
+        <ion-label color="myBlueColour" stacked>Respuesta Correcta:</ion-label>
+        <ion-textarea
+          type="text"
+          min="5"
+          max="500"
+          placeholder="Texto a mostrar en caso de que responda incorrectamente."
+          [(ngModel)]="newQuestion.correctAnwserText"
+          >{{ newQuestion.correctAnwserText }}</ion-textarea
+        >
+      </ion-item>
+    </ion-list>
+
+    <ion-item style="padding-left: 0px" *ngIf="newQuestion.type === 'Closed'">
+      <ion-label color="myBlueColour" stacked>Respuesta Esperada:</ion-label>
+      <ion-textarea
+        type="text"
+        min="5"
+        max="500"
+        placeholder="Respuesta esperada."
+        [(ngModel)]="newQuestion.correctAnwser"
+        >{{ newQuestion.correctAnwserText }}</ion-textarea
+      >
+    </ion-item>
+
+    <div style="text-align: center">
+      <button ion-button color="danger" (click)="dismissWithoutSave()">
+        Cancelar
+      </button>
+      <button
+        ion-button
+        color="myBlueColour"
+        [disabled]="
+          !completeQuestion
+        "
+        (click)="acceptAddPoi()"
+      >
+        Aceptar
+      </button>
+    </div>
+  </ion-card-content>
+</ion-card>

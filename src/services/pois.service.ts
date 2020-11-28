@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import { AngularFireDatabase } from "angularfire2/database";
-import { ToastController } from "ionic-angular";
+import { Injectable } from '@angular/core';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { ToastController } from 'ionic-angular';
 /*import { Observable } from '@firebase/util';
 import { getPromise } from '@ionic-native/core';
 import { Observable } from 'rxjs/Observable';
 import { PositioningPage } from '../pages/positioning/positioning';*/
-import { Subscription } from "rxjs";
-import { tap, map } from "rxjs/operators";
+import { Subscription } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 declare var cordova: any;
 
 export class Creator {
@@ -62,7 +62,7 @@ export class Poi {
 @Injectable()
 export class PoisService {
   poisTraidos: any[];
-  tabla = "pois/";
+  tabla = 'pois/';
   public subscription: Subscription;
 
   constructor(
@@ -72,27 +72,25 @@ export class PoisService {
 
   public updatePoi(anEditedPoi, aWorkspace) {
     aWorkspace.building = null;
-    return new Promise<boolean>(resPromesa => {
-      debugger;
+    return new Promise<boolean>((resPromesa) => {
       this.angularfirebaseDB.database
         .ref(
-          "pois/" +
+          'pois/' +
             aWorkspace.idWorkspace +
-            "/" +
+            '/' +
             anEditedPoi.floorIdentifier +
-            "/" +
+            '/' +
             anEditedPoi.creator +
-            "/" +
+            '/' +
             anEditedPoi.identifier +
-            "/"
+            '/'
         )
         .set(anEditedPoi)
         .then(
-          resolve => {
+          (resolve) => {
             resPromesa(true);
           },
-          reject => {
-            debugger;
+          (reject) => {
             resPromesa(false);
           }
         );
@@ -100,8 +98,7 @@ export class PoisService {
   }
 
   public updatePoiText(anEditedPoi, aWorkspace, text, cambioFormaBrindarPoi) {
-    return new Promise<boolean>(resPromesa => {
-      debugger;
+    return new Promise<boolean>((resPromesa) => {
       aWorkspace.building = null;
       // if (text.includes("Nombre") || text.includes("Descripcion") || (cambioFormaBrindarPoi == true)) {
       /*SI TENGO QUE CAMBIAR ALGUNA, CAMBIO LAS TRES PARA NO ANIDAR PROMESAS,
@@ -116,7 +113,7 @@ export class PoisService {
       //         resolve => {
       //             resPromesa(true);
       //         }, reject => {
-      //             debugger;
+      //
       //             resPromesa(false);
       //         });
 
@@ -133,15 +130,15 @@ export class PoisService {
       //                                 resolve => {
       //                                     resPromesa(true);
       //                                 }, reject => {
-      //                                     debugger;
+      //
       //                                     resPromesa(false);
       //                                 });
       //                     }, reject => {
-      //                         debugger;
+      //
       //                         resPromesa(false);
       //                     });
       //         }, reject => {
-      //             debugger;
+      //
       //             resPromesa(false);
       //         });
       // }
@@ -169,29 +166,26 @@ export class PoisService {
   }
 
   public updatePoiVisibility(aPoi, aWorkspace, visible) {
-    return new Promise<boolean>(resPromesa => {
-      debugger;
+    return new Promise<boolean>((resPromesa) => {
       aWorkspace.building = null;
       this.angularfirebaseDB.database
         .ref(
-          "pois/" +
+          'pois/' +
             aWorkspace.idWorkspace +
-            "/" +
+            '/' +
             aPoi.floorIdentifier +
-            "/" +
+            '/' +
             aPoi.creator +
-            "/" +
+            '/' +
             aPoi.identifier +
-            "/visible/"
+            '/visible/'
         )
         .set(visible)
         .then(
-          resolve => {
-            debugger;
+          (resolve) => {
             resPromesa(true);
           },
-          reject => {
-            debugger;
+          (reject) => {
             resPromesa(false);
           }
         );
@@ -199,20 +193,20 @@ export class PoisService {
   }
 
   public encriptQR(aPoi, pagina, loading) {
-    return new Promise<boolean>(result => {
+    return new Promise<boolean>((result) => {
       let options: {
         width: 256;
         height: 256;
-        colorDark: "#000000";
-        colorLight: "#ffffff";
+        colorDark: '#000000';
+        colorLight: '#ffffff';
       };
       cordova.plugins.qrcodejs.encode(
-        "TEXT_TYPE",
+        'TEXT_TYPE',
         aPoi.QRCodeID,
-        base64EncodedQRImage => {
+        (base64EncodedQRImage) => {
           pagina.okEncrypt(base64EncodedQRImage, loading);
         },
-        err => {
+        (err) => {
           pagina.notOkEncrypt(loading, err);
         },
         options
@@ -230,14 +224,13 @@ export class PoisService {
     if (loading) {
       pagina.hideLoading(loading);
     }
-    return new Promise<Poi[]>(resPromesa => {
+    return new Promise<Poi[]>((resPromesa) => {
       //EL LISTENER DE FIREBASE EJECUTA DESDE EL SUBSCRIBE
       this.subscription = this.angularfirebaseDB
-        .list("pois/" + workspaceId + "/" + currentFloor.floorIdentifier)
+        .list('pois/' + workspaceId + '/' + currentFloor.floorIdentifier)
         .valueChanges()
         .subscribe(
-          pois => {
-            debugger;
+          (pois) => {
             if (loading) {
               //FUNCIONA PARA CUANDO CAMBIO DE PISO CREO
               pagina.hideLoading(loading);
@@ -246,12 +239,12 @@ export class PoisService {
               changeFloor = false;
               pagina.updatePoisWithResult2(pois, trigger); //PRIMERA VEZ VA POR CAMBIO DE PISO
             } else {
-              trigger = "updatedPois";
+              trigger = 'updatedPois';
               pagina.updatePoisWithResult2(pois, trigger);
             }
           },
-          error => {
-            const errorMsg = "Un error ha ocurrido actualizar el poi";
+          (error) => {
+            const errorMsg = 'Un error ha ocurrido actualizar el poi';
             console.log(`${errorMsg}`, error);
           }
         );
@@ -260,47 +253,47 @@ export class PoisService {
 
   public getAllPois(workspaceId: number) {
     return this.angularfirebaseDB
-      .list("pois/" + workspaceId)
+      .list('pois/' + workspaceId)
       .valueChanges()
       .pipe(
-        map(response =>
+        map((response) =>
           response.reduce((a: any[], b) => {
-            const elementsb = Object.keys(b).map(k => {
+            const elementsb = Object.keys(b).map((k) => {
               const element = b[k];
 
-              return Object.keys(element).map(e => element[e]);
+              return Object.keys(element).map((e) => element[e]);
             });
-            console.log("EMENTSB", elementsb);
-            console.log("A", elementsb);
+            console.log('EMENTSB', elementsb);
+            console.log('A', elementsb);
             return [...a, ...elementsb];
           }, [])
         ),
-        tap(response => {
-          console.log("after map", response);
+        tap((response) => {
+          console.log('after map', response);
         })
       );
   }
 
   public savePoi(workspaceId, aPoi) {
-    return new Promise<boolean>(result => {
+    return new Promise<boolean>((result) => {
       aPoi.workspaceId = workspaceId; //PONGO EL ID DEL WORKSPACE EN EL POI
       this.angularfirebaseDB.database
         .ref(
           this.tabla +
-          workspaceId +
-          "/" +
-          aPoi.floorIdentifier +
-          "/" +
-          aPoi.creator +
-          "/" + //CAMBIOS ACA
+            workspaceId +
+            '/' +
+            aPoi.floorIdentifier +
+            '/' +
+            aPoi.creator +
+            '/' + //CAMBIOS ACA
             aPoi.identifier
         )
         .set(aPoi)
         .then(
-          resolve => {
+          (resolve) => {
             result(true);
           },
-          reject => {
+          (reject) => {
             result(false);
           }
         );
@@ -308,24 +301,24 @@ export class PoisService {
   }
 
   public deletePoi(aPoi) {
-    return new Promise<boolean>(result => {
+    return new Promise<boolean>((result) => {
       this.angularfirebaseDB.database
         .ref(
-          "pois/" +
+          'pois/' +
             aPoi.workspaceId +
-            "/" +
+            '/' +
             aPoi.floorIdentifier +
-            "/" +
+            '/' +
             aPoi.creator +
-            "/" +
+            '/' +
             aPoi.identifier
         )
         .set(null)
         .then(
-          resolve => {
+          (resolve) => {
             result(true);
           },
-          reject => {
+          (reject) => {
             result(false);
           }
         );

@@ -33,11 +33,14 @@ import {
 import { PermissionsService } from '../../services/permissions';
 import { PoisService, Poi, Creator } from '../../services/pois.service';
 import { LoginService } from '../../services/login.service';
-import { BuildingsService, Building } from '../../services/buildings.service';
+import { BuildingsService } from '../../services/buildings.service';
 import { MapService } from '../../services/map.service';
 import { ModalContentPage } from '../modal/modal';
-import { BlockScreenPage } from '../blockScreen/blockScreen';
 import { NuevoPoiPage } from '../nuevoPoi/nuevoPoi';
+import { AddQuestion } from '../addQuestion/addQuestion';
+
+import { ModalGameConfiguration } from '../modalGameConfiguration/modalGameConfiguration';
+
 import { ModalExitApp } from '../modalExitApp/modalExitApp';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner'; //lee QR
 import { QRCodeModule } from 'angularx-qrcode'; //genera QR (?
@@ -158,6 +161,8 @@ export class PositioningPage {
   private canChangeFloor: boolean = true;
   private drawingMarkers;
   private iconAddUserColour;
+  private iconAddQuestion;
+
   private possiblesStatusesStrings = [
     'EdicionDelCreador',
     'EdicionColaborativa',
@@ -276,7 +281,7 @@ export class PositioningPage {
 
     this.events.subscribe('workspace:setWorkspaceState', (newStatusString) => {
       //SE DISPARA CUANDO SE ABRE EL WORKSPACE
-      debugger;
+
       if (this.currentWorkspace) {
         this.lastKnownStatus = this.currentWorkspace.status.idStatus;
         this.currentWorkspace.status = this.getSelectedWorkspaceStatus(
@@ -328,7 +333,7 @@ export class PositioningPage {
 
     this.events.subscribe('workspace:updated', (newStatusString) => {
       //SE DISPARA CUANDO SE CAMBIA EL ESTADO DEL WORKSPACE
-      debugger;
+
       if (this.currentWorkspace) {
         this.lastKnownStatus = this.currentWorkspace.status.idStatus;
         this.currentWorkspace.status = this.getSelectedWorkspaceStatus(
@@ -450,7 +455,7 @@ export class PositioningPage {
       }
 
       this.workspaceIdStatus = aWorkspace.status.idStatus;
-      debugger;
+
       if (this.isPublicVersion) {
         this.changeVisualMode();
       }
@@ -459,14 +464,23 @@ export class PositioningPage {
         //EL WORKSPACE ES MIO PONGO MI COLOR PARA CREAR PoIs
         this.userColour = '#1576C9'; //COLOR DE LA MY BLUE COLOUR PARA QUIEN ES OWNER DEL WORKSPACE
         this.isCurrentWorkspaceOwner = true;
+
+        this.iconAddQuestion = 'assets/img/questionMark.png';
         this.iconAddUserColour =
           'assets/img/' + 'pinPoi' + this.userColour.substring(1) + '.png';
 
         // this.icon = "assets/img/"+"pinPoiQR"+this.colorString+".png";
+        if (!aWorkspace.configuration) {
+          this.openGameConfiguration(true);
+        } else {
+          if (aWorkspace.configuration.type !== 'free') {
+            this.iconAddUserColour = 'assets/img/addQuestionPOI.png';
+          }
+        }
       } else {
         //SINO, DEBO BUSCAR MI COLOR ENTRE LOS DE LOS COLABORADORES PARA CREAR PoIs
         let collaborator;
-        debugger;
+
         this.isCurrentWorkspaceOwner = false;
         collaborator = aWorkspace.collaborators.find(
           (col) => col.idCollaborator === this.userLogged.uid
@@ -474,7 +488,12 @@ export class PositioningPage {
         this.userColour = collaborator.idColour;
         this.iconAddUserColour =
           'assets/img/' + 'pinPoi' + this.userColour.substring(1) + '.png';
-        debugger;
+        if (
+          aWorkspace.configuration &&
+          aWorkspace.configuration.type !== 'free'
+        ) {
+          this.iconAddUserColour = 'assets/img/addQuestionPOI.png';
+        }
       }
       this.verMapaReal(this.currentWorkspace.building);
       this.initializeMustShowAddPoiButton(
@@ -586,7 +605,6 @@ export class PositioningPage {
   }
 
   private changeVisualMode() {
-    debugger;
     if (this.isFinalMode) {
       this.isFinalMode = false;
       this.changeableColour = '#1576C9';
@@ -673,7 +691,6 @@ export class PositioningPage {
                 console.log('SE GUARDO!');
               },
               function (err) {
-                debugger;
                 console.log('HUBO UN ERROR');
                 ok = false;
               }
@@ -713,7 +730,6 @@ export class PositioningPage {
               storeDirectory + '/CodigosQR/' + this.currentWorkspace.name + '/'
             );
           }
-          debugger;
         })
         .catch((err) => {
           console.log("Directory doesn't exist" + JSON.stringify(err));
@@ -727,10 +743,8 @@ export class PositioningPage {
                   this.currentWorkspace.name +
                   '/'
               );
-              debugger;
             })
             .catch((err) => {
-              debugger;
               console.log('Directory no create' + JSON.stringify(err));
             });
         });
@@ -745,7 +759,6 @@ export class PositioningPage {
   }
 
   solicitarPermiso(permissions) {
-    debugger;
     permissions.requestPermission(
       'WRITE_EXTERNAL_STORAGE',
       this.exportImages(),
@@ -754,7 +767,6 @@ export class PositioningPage {
   }
 
   aviso() {
-    debugger;
     this.alertText(
       '',
       'Debe permitir el acceso al sistema de archivos para exportar las imágenes.'
@@ -764,7 +776,6 @@ export class PositioningPage {
   private exportQRImages() {
     //this.diagnostic.isExternalStorageAuthorized true/false
     this.diagnostic.getExternalStorageAuthorizationStatus().then((response) => {
-      debugger;
       if (this.permissionGranted(response)) {
         //"GRANTED" / "DENIED"
         this.exportImages();
@@ -772,7 +783,6 @@ export class PositioningPage {
         this.diagnostic
           .requestExternalStorageAuthorization()
           .then((r) => {
-            debugger;
             if (this.permissionGranted(r)) {
               //"GRANTED" / "DENIED"
               this.exportImages(); //LO LLAMA PERO NO TIENE PERMISOS AUN
@@ -930,7 +940,6 @@ export class PositioningPage {
   }
 
   private mostrarQRCode(aPoi) {
-    debugger;
     let QRModal = this.modalCtrl.create(QRCodePage, aPoi); //Le paso el string
     QRModal.present();
   }
@@ -947,7 +956,7 @@ export class PositioningPage {
     this.removeRouteFromMap();
     let loadingObteniendoRuta = this.createLoading('Cargando ruta...');
     loadingObteniendoRuta.present();
-    debugger;
+
     /*let directionsOptionsMap = {
       accesible: this.accessible,
       startingAngle: this.currentPosition.bearing.degrees,
@@ -965,7 +974,7 @@ export class PositioningPage {
       ],
       (route) => {
         // Route Situm object, DEBO PINTAR ESA RUTA.
-        debugger;
+
         this.route = route;
         this.hideLoading(loadingObteniendoRuta); //PUEDE SER
         this.drawRouteOnMap(this.route);
@@ -1029,7 +1038,7 @@ export class PositioningPage {
 
   setCreators() {
     //PONE TODOS LOS CREADORES EN UN ARREGLO ITERABLE
-    // debugger;
+    //
     // if (this.creators != null) {
     //   return;
     // }
@@ -1070,7 +1079,7 @@ export class PositioningPage {
     });
     modalFilterPoi.onDidDismiss((filteredCreators) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
-      debugger;
+
       if (filteredCreators != undefined) {
         this.updateCreators(filteredCreators);
         let jsonFilteredCreators = JSON.stringify(filteredCreators);
@@ -1167,7 +1176,7 @@ export class PositioningPage {
               let pois = listOfAnUser[index];
               return pois;
             });
-            debugger;
+
             if (
               arrayOfPois[0].floorIdentifier ==
               this.currentFloor.floorIdentifier
@@ -1242,13 +1251,12 @@ export class PositioningPage {
     if (this.currentWorkspace.status.idStatus == 'VersionFinalPublica') {
       //DIBUJAR SOLO LOS MARCADORES VISIBLES PARA CUALQUIER USUARIO FINAL
       //this.alertText("ESTA EN VERSION FINAL PUBLICA", "RENDERIZANDO SOLO LOS VISIBLES");
-      debugger;
+
       this.pois.forEach((poisByUser) => {
-        debugger;
         let poisByUserVisibles;
         poisByUserVisibles = poisByUser.filter((pbu) => pbu.visible == true);
         marcadoresADibujar = marcadoresADibujar + poisByUserVisibles.length;
-        debugger;
+
         let sizeOfMarkers = this.getCorrectSizeMarker(this.zoomActual);
         let arrayOfUser = new Array<Array<Poi>>();
         arrayOfUser.push(poisByUserVisibles);
@@ -1305,12 +1313,12 @@ export class PositioningPage {
         this.pois.forEach((poisByUser) => {
           //RECORRO LOS PUNTOS DE INTERÉS
           let poi = poisByUser[0];
-          debugger;
+
           if (this.visibleCreator(poi.creator)) {
             //SI ESTÁ FILTRADO NO LO MUESTRO
             console.log('EL CREADOR ES VISIBLE!');
             marcadoresADibujar = marcadoresADibujar + poisByUser.length;
-            debugger;
+
             let sizeOfMarkers = this.getCorrectSizeMarker(this.zoomActual);
             let arrayOfUser = new Array<Array<Poi>>();
             arrayOfUser.push(poisByUser);
@@ -1394,8 +1402,6 @@ export class PositioningPage {
   }
 
   drawPolylinesForCreator(aCreatorString) {
-    debugger;
-
     this.pois.some((poisByCreator) => {
       let creator = poisByCreator[0].creator;
       if (creator == aCreatorString) {
@@ -1481,7 +1487,7 @@ export class PositioningPage {
   dibujarTodosLosCaminos() {
     this.pois.forEach((aPoisByUser) => {
       //RECORRO LOS PoIs POR USUARIO
-      debugger;
+
       let stringCreator = aPoisByUser[0].creator; //ME QUEDO CON EL USUARIO DUEÑO DE LA COLECCION
       var userPolylines = new Array<Polyline>();
       var poiFrom = aPoisByUser[0];
@@ -1530,7 +1536,7 @@ export class PositioningPage {
         }
         poiFrom = poiTo;
       });
-      debugger;
+
       this.currentPolylinesByCreator[stringCreator] = userPolylines;
     });
     console.log('LAS POLYLINES SON:');
@@ -1575,7 +1581,6 @@ export class PositioningPage {
               'changeFloor'
             )
             .then((resPromesa) => {
-              debugger;
               //this.updatePoisWithResult2(resPromesa);
             });
         });
@@ -1652,7 +1657,6 @@ export class PositioningPage {
     marcadoresDibujados,
     loadingDrawingPois
   ) {
-    debugger;
     arrayOfPoisByUser.forEach((aPoisByUser) => {
       let stringCreator = aPoisByUser[0].creator;
       //let markersOfUserAux = new Array<Marker>();
@@ -1841,7 +1845,7 @@ export class PositioningPage {
         if (!this.currentPosition || !this.currentPosition.coordinate) return;
         let position = this.mountPositionCoords(this.currentPosition);
         if (this.navigating) this.updateNavigation(this.currentPosition);
-        debugger;
+
         let iconPosition: MarkerIcon = { size: { height: 60, width: 60 } };
         iconPosition.url = 'assets/img/finalFootPrint.png';
         this.marker.setIcon(iconPosition);
@@ -1863,7 +1867,38 @@ export class PositioningPage {
     );
   }
 
-  private saveCurrentPosition() {
+  public saveQuestion() {
+    let question = new Poi();
+    question.identifier = Date.now().toString();
+    question.creator = this.nameUserLogged;
+    question.visible = true;
+    let addQuestionModal = this.modalCtrl.create(AddQuestion, {
+      nuevoPoi: question,
+      workspace: this.currentWorkspace,
+      loggedUser: this.userLogged,
+    }); //Le paso el poi casi completo
+    addQuestionModal.onDidDismiss((poiResultado) => {
+      //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
+
+      let message;
+      this.canChangeFloor = false;
+      if (poiResultado != undefined) {
+        // if (this.badPosition(poiResultado)) {
+        //   //A VECES LA POSICION SE LE ANULAN PARAMETROS, POR ESO ES BUENO CHEQUEARLO
+        //   console.log('LA POSICION NO ERA BUENA');
+        //   this.stopPositioning(null);
+        //   this.repositionAndSave(poiResultado);
+        // } else {
+        //   this.savePoi(poiResultado);
+        // }
+      }
+      this.savingPoi = false; //Ya se cerró la ventana.
+    });
+    this.savingPoi = true; //Se va a abrir la ventana
+    addQuestionModal.present();
+  }
+
+  public saveCurrentPosition() {
     let primerPoi = new Poi();
     primerPoi.identifier = Date.now().toString();
     primerPoi.buildingIdentifier = this.currentWorkspace.buildingIdentifier;
@@ -1887,7 +1922,7 @@ export class PositioningPage {
     }); //Le paso el poi casi completo
     nuevoPoiModal.onDidDismiss((poiResultado) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
-      debugger;
+
       let message;
       this.canChangeFloor = false;
       if (poiResultado != undefined) {
@@ -1932,7 +1967,7 @@ export class PositioningPage {
     modalLogin.onDidDismiss((user) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
       console.log(user);
-      debugger;
+
       this.userLogged = user;
 
       this.setUserData();
@@ -2009,7 +2044,7 @@ export class PositioningPage {
     //CUANDO CAMBIA EL USUARIO OWNER A MANO, LUEGO DE CAMBIARLO AVISA CUAL ES EL NUEVO ESTADO
     //this.lastKnownStatus = this.getSelectedWorkspaceStatus(this.currentWorkspace.status.idStatus);
     let newStatus = this.getSelectedWorkspaceStatus(newStatusString);
-    debugger;
+
     if (newStatusString == 'VersionFinalPublica') {
       //LO ESTOY INTENTANDO CERRAR
       let modalWorkspaceRelease = this.modalCtrl.create(ModalWorkspaceRelease, {
@@ -2017,7 +2052,7 @@ export class PositioningPage {
       });
       modalWorkspaceRelease.onDidDismiss((strategies) => {
         //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
-        debugger;
+
         if (strategies) {
           this.workspaceService
             .defineWorkspaceStrategiesAndUpdateState(
@@ -2139,7 +2174,7 @@ export class PositioningPage {
           this.currentFloor = this.floors[0];
 
           this.nroPisoActual = 0;
-          debugger;
+
           this.mountMap(unEdificio);
 
           this.map
@@ -2174,7 +2209,6 @@ export class PositioningPage {
       //this.clearMarkers();
       this.destroyAllMarkers();
       this.moverMapa(loading);
-      debugger;
     }
   }
 
@@ -2237,7 +2271,7 @@ export class PositioningPage {
 
   private mountOverlay(loading) {
     let bounds = this.getBounds(this.building);
-    debugger;
+
     this.mapService
       .addGroundOverlay(
         this.map,
@@ -2256,7 +2290,7 @@ export class PositioningPage {
       });
   }
   // private resetPositioning(loadingIndoorPositioning) {
-  //   debugger;
+  //
   //   if (this.positioning == false) {
   //     this.currentPosition = undefined;
   //     this.stopPositioning(loadingIndoorPositioning);
@@ -2286,22 +2320,20 @@ export class PositioningPage {
               .checkLocationPermissions()
               .then((permission) => {
                 console.log('Location permission?', permission);
-                debugger;
+
                 if (permission) {
                   if (this.positioning == true) {
-                    debugger;
                     const message = 'Position listener is already enabled.';
                     this.presentToast(message, 'bottom', null);
                     return;
                   }
                   if (!this.map) {
-                    debugger;
                     const message =
                       'The map must be visible in order to launch the positioning';
                     this.presentToast(message, 'bottom', null);
                     return;
                   }
-                  debugger;
+
                   loadingIndoorPositioning = this.createLoading(
                     'Cargando posición indoor...'
                   );
@@ -2311,12 +2343,11 @@ export class PositioningPage {
                   // Set callback and starts listen onLocationChanged event
                   // More details in http://developers.situm.es/sdk_documentation/cordova/jsdoc/1.3.10/symbols/Situm.html#.startPositioning
                   //timer = setTimeout(() => this.resetPositioning(loadingIndoorPositioning), 10000);
-                  debugger;
 
                   cordova.plugins.Situm.startPositioning(
                     locationOptions,
                     (res: any) => {
-                      //debugger;
+                      //
                       this.positioning = true;
                       this.currentPosition = res;
                       console.log('LA POSICION ES:');
@@ -2333,7 +2364,7 @@ export class PositioningPage {
                       // Update the navigation
                       if (this.navigating)
                         this.updateNavigation(this.currentPosition);
-                      debugger;
+
                       let iconPosition: MarkerIcon = {
                         size: { height: 60, width: 60 },
                       };
@@ -2346,7 +2377,6 @@ export class PositioningPage {
                       //this.mostrarPosicionActual(res);
                     },
                     (err: any) => {
-                      debugger;
                       const reason = err.match('reason=(.*),');
                       let errorMessage = reason ? reason[1] : err;
                       this.stopPositioning(loadingIndoorPositioning);
@@ -2360,14 +2390,12 @@ export class PositioningPage {
                     }
                   );
                 } else {
-                  debugger;
                   this.stopPositioning(loadingIndoorPositioning);
                   const message = `You must have the location permission granted for positioning.`;
                   this.presentToast(message, 'bottom', null);
                 }
               })
               .catch((error) => {
-                debugger;
                 //this.hideLoading(loadingIndoorPositioning);
                 console.log(error);
                 this.stopPositioning(loadingIndoorPositioning);
@@ -2393,10 +2421,9 @@ export class PositioningPage {
       .checkLocationPermissions()
       .then((permission) => {
         console.log('Location permission?', permission);
-        debugger;
+
         if (permission) {
           if (this.positioning == true) {
-            debugger;
             const message = 'Position listener is already enabled.';
             this.presentToast(message, 'bottom', null);
             return;
@@ -2422,7 +2449,6 @@ export class PositioningPage {
           cordova.plugins.Situm.startPositioning(
             locationOptions,
             (res: any) => {
-              debugger;
               this.positioning = true;
               this.currentPosition = res;
               if (!this.currentPosition || !this.currentPosition.coordinate)
@@ -2499,7 +2525,6 @@ export class PositioningPage {
   }
 
   private mountLocationOptions() {
-    debugger;
     let locationOptions = new Array();
     locationOptions.push(this.building);
     (defaultOptionsMap[
@@ -2522,13 +2547,11 @@ export class PositioningPage {
     cordova.plugins.Situm.updateNavigationWithLocation(
       position,
       (result) => {
-        debugger;
         console.log('RESULT ES:');
         console.log(result);
         this.presentAlert();
       },
       (error) => {
-        debugger;
         // If errors will come here
       }
     );
@@ -2565,7 +2588,7 @@ export class PositioningPage {
   }
 
   /*private showRoute() {
-    debugger;
+
     if (!this.map || (!this.pois || this.pois.length == 0) || !this.positioning) {
       const message = 'El mapa y los POIs deben ser visibles, y la posición actual debe conocerse para determinar la ruta';
       //const message = 'The map with the POIs must be visible and the positioning must be started in order to determine the route';
@@ -2591,7 +2614,7 @@ export class PositioningPage {
     // In this case, determining route between the current position and the second POI
     // More details in http://developers.situm.es/sdk_documentation/cordova/jsdoc/1.3.10/symbols/Situm.html#.requestDirections
     cordova.plugins.Situm.requestDirections([this.building, this.currentPosition, this.pois[0], directionsOptionsMap], (route: any) => {
-      //debugger;
+      //
       this.route = route;
       this.drawRouteOnMap(route);
       this.detector.detectChanges();
@@ -2610,7 +2633,7 @@ export class PositioningPage {
   }
 
   private drawRouteOnMap(route) {
-    //debugger;
+    //
     let polylineOptions: PolylineOptions = {
       color: ROUTE_COLOR,
       width: 8,
@@ -2685,11 +2708,10 @@ export class PositioningPage {
       [navigationOptions],
       (res: any) => {
         // Progress and other navigation status messages can be processed here
-        debugger;
+
         console.log(res);
       },
       (error: any) => {
-        debugger;
         // If errors will come here
       }
     );
@@ -2742,7 +2764,6 @@ export class PositioningPage {
 
   /*ver datos poi*/
   public abrirPoi(unTituloPoi: string) {
-    debugger;
     let searchedPoi;
     this.pois.some((poisByCreator) => {
       let found;
@@ -2846,7 +2867,7 @@ export class PositioningPage {
   //QUEDARME CON EL MARCADOR PARA CAMBIARLE EL ICONO CUANDO NAVEGO O NO
   // private clearMarkers() {
   //   //FALTA LLAMARLO
-  //   debugger;
+  //
   //   // this.alertText("SE LLAMO AL CLEAR MARKERS","");
   //   if (this.currentMarkers.length > 0) {
   //     this.currentMarkers.forEach(marker => {
@@ -2876,7 +2897,6 @@ export class PositioningPage {
   }
 
   destroyMarkersForCreator(aCreatorString) {
-    debugger;
     if (this.currentMarkersByCreator[aCreatorString] != undefined) {
       this.currentMarkersByCreator[aCreatorString].forEach((marker) => {
         marker.remove();
@@ -3099,4 +3119,20 @@ export class PositioningPage {
       .savePoi(this.currentWorkspace.idWorkspace, poi)
       .then((res) => {});
   }
+
+  public openGameConfiguration = (initial = false) => {
+    let OpenConfiguration = this.modalCtrl.create(ModalGameConfiguration, {
+      workspace: this.currentWorkspace,
+      loggedUser: this.userLogged,
+      initial,
+    });
+
+    //Actualizo el workspace
+    OpenConfiguration.onDidDismiss((workspace) => {
+      if (workspace) {
+        this.currentWorkspace = workspace;
+      }
+    });
+    OpenConfiguration.present();
+  };
 }

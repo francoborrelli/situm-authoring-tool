@@ -2,11 +2,11 @@
   <ion-card-title *ngIf="editionMode" style="text-align: center"
     >Editando POI</ion-card-title
   >
-  <div *ngIf="poi.infoHtml != '' && !editionMode">
+  <div *ngIf="poi.infoHtml && !editionMode">
     <img [src]="poi.infoHtml" />
     <ion-fab right top #fab disabled>
-      <button ion-fab *ngIf="poi.infoHtml != ''" color="white">
-        <img style="width: 44px; height: 44px;" src="{{ icon }}" />
+      <button ion-fab *ngIf="poi.infoHtml" color="white">
+        <img style="width: 44px; height: 44px" src="{{ icon }}" />
       </button>
     </ion-fab>
   </div>
@@ -14,9 +14,9 @@
   <ion-card-content>
     <div *ngIf="!editionMode">
       <ion-card-title *ngIf="!poi.question || !isFinal">
-        {{ poi.poiName }}
+        {{ poi?.poiName }}
       </ion-card-title>
-      <p *ngIf="!poi.question || !isFinal">{{ poi.category }}</p>
+      <p *ngIf="!poi.question || !isFinal">{{ poi?.category }}</p>
       <p *ngIf="!poi.question || !isFinal">
         <b>Usuario creador: </b>{{ poi.creator }}
       </p>
@@ -24,9 +24,7 @@
         <b>Se brinda el PoI: </b>{{ poi.asociatedTrigger }}
       </p>
 
-      <p *ngIf="poi.question" class="question">
-        {{ poi.question }}
-      </p>
+      <p *ngIf="poi.question" class="question">{{ poi.question }}</p>
       <!-- final user view -->
 
       <ion-grid *ngIf="!editionMode && !mustShowEditAndDelete">
@@ -39,7 +37,7 @@
               icon-start
               item-end
               (click)="sendAnswer('true')"
-              style="margin-left:20%; margin-right: 20%; width: 60%;"
+              style="margin-left: 20%; margin-right: 20%; width: 60%"
             >
               Verdadero
             </button>
@@ -52,7 +50,7 @@
               icon-start
               item-end
               (click)="sendAnswer('false')"
-              style="margin-left:20%; margin-right: 20%; width: 60%;"
+              style="margin-left: 20%; margin-right: 20%; width: 60%"
             >
               Falso
             </button>
@@ -81,7 +79,11 @@
         </ion-item>
       </ion-list>
     </div>
-    <ion-item *ngIf="editionMode" style="padding-left:0px; padding-top: 2%">
+
+    <ion-item
+      *ngIf="editionMode && !isFreeGame"
+      style="padding-left: 0px; padding-top: 2%"
+    >
       <ion-label color="myBlueColour" stacked>Nombre / Título:</ion-label>
       <ion-input
         #inputNamePoi
@@ -93,7 +95,7 @@
         >{{ editedPoi.poiName }}</ion-input
       >
     </ion-item>
-    <ion-item *ngIf="editionMode" style="padding-left:0px;">
+    <ion-item *ngIf="editionMode && !isFreeGame" style="padding-left: 0px">
       <ion-label color="myBlueColour" stacked>Descripción:</ion-label>
       <ion-textarea
         type="text"
@@ -105,7 +107,7 @@
       >
     </ion-item>
 
-    <ion-item style="padding-left:0px;" *ngIf="editionMode && hasQuestions">
+    <ion-item style="padding-left: 0px" *ngIf="editionMode && hasQuestions">
       <ion-label color="myBlueColour" stacked>Pregunta:</ion-label>
       <ion-textarea
         type="text"
@@ -123,12 +125,14 @@
       *ngIf="editionMode && hasQuestions"
     >
       <ion-list-header
-        style="padding-left: 0px;
-      margin-bottom: 0px;
-      margin-top: -19px;
-      border-top: none;
-      color: #1576C9;
-      font-size: 12px;"
+        style="
+          padding-left: 0px;
+          margin-bottom: 0px;
+          margin-top: -19px;
+          border-top: none;
+          color: #1576c9;
+          font-size: 12px;
+        "
       >
         Respuesta:
       </ion-list-header>
@@ -144,10 +148,10 @@
       </ion-item>
     </ion-list>
 
-    <ion-item *ngIf="editionMode" style="padding-left:0px;">
+    <ion-item *ngIf="editionMode" style="padding-left: 0px">
       <ion-label style="color: black">Brindar el PoI:</ion-label>
       <ion-select
-        style="max-width: 100%;"
+        style="max-width: 100%"
         (ionChange)="cambioFormaBrindarPoi($event)"
         class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
         [(ngModel)]="editedPoi.asociatedTrigger"
@@ -168,7 +172,7 @@
             icon-start
             item-end
             (click)="saveEditedPoi(editedPoi)"
-            style="margin-left:20%; margin-right: 20%; width: 60%;"
+            style="margin-left: 20%; margin-right: 20%; width: 60%"
           >
             Guardar
           </button>
@@ -181,7 +185,7 @@
             icon-start
             item-end
             (click)="switchEditionMode()"
-            style="margin-left:20%; margin-right: 20%; width: 60%;"
+            style="margin-left: 20%; margin-right: 20%; width: 60%"
           >
             Cancelar
           </button>
@@ -198,7 +202,7 @@
             icon-start
             item-end
             (click)="switchEditionMode()"
-            style="margin-left:20%; margin-right: 20%; width: 60%;"
+            style="margin-left: 20%; margin-right: 20%; width: 60%"
           >
             <ion-icon ios="ios-create" md="md-create"></ion-icon>
             Editar
@@ -212,7 +216,7 @@
             icon-start
             item-end
             (click)="deletePoi(poi)"
-            style="margin-left:20%; margin-right: 20%; width: 60%;"
+            style="margin-left: 20%; margin-right: 20%; width: 60%"
           >
             <ion-icon ios="ios-trash" md="md-trash"></ion-icon>
             Eliminar

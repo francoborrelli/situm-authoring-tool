@@ -36,7 +36,7 @@ export class ModalNewWorkspace {
     private alertCtrl: AlertController
   ) {
     this.edificaciones = this.navParams.data;
-    debugger;
+
     this.newWorkspace = new Workspace();
     this.newWorkspace.idWorkspace = Date.now();
     this.newWorkspace.collaborators = new Array<string>();

@@ -241,6 +241,53 @@
               </button> -->
           </ion-col>
         </ion-row>
+
+        <ion-row style="padding-top: 2vh">
+          <ion-col>
+            <button
+              color="white"
+              *ngIf="
+                currentFloor &&
+                positioning == true &&
+                !isFinalMode &&
+                mustShowAddPoiButton && currentWorkspace.configuration && currentWorkspace.configuration.type === 'free'
+              "
+              ion-fab
+              (click)="closeFab(fab); saveQuestion()"
+            >
+              <!-- <ion-icon color="myBlueColour" ios="ios-add-circle" md="md-add-circle"></ion-icon> -->
+              <!-- [ngStyle]="{'color': userColour}" -->
+              <!-- <img style="width: 44px; height: 44px;" src="assets/img/stopLocateInverseDanger.png"> -->
+              <!-- this.icon = "assets/img/"+"pinPoiQR"+this.colorString+".png"; -->
+              <!-- <img style="width: 44px; height: 44px;" src={{icon}}> -->
+              <img
+                style="width: 44px; height: 44px; position: fixed"
+                src="{{ iconAddQuestion }}"
+              />
+              <ion-icon
+                style="
+                  z-index: 999;
+                  padding-top: 16px;
+                  padding-left: 28px;
+                  font-weight: bold;
+                  font-size: 28px;
+                "
+                ios="ios-add"
+                md="md-add"
+              ></ion-icon>
+              <!-- <ion-icon style="z-index: 999;padding-top: 10px;padding-left: 14px; color:#f7f7f7" ios="ios-add-circle" md="md-add-circle"></ion-icon> -->
+            </button>
+            <!-- <button color="white" *ngIf="currentFloor && positioning == true && !isFinalMode" ion-fab (click)="closeFab(fab);saveCurrentPosition()"> -->
+            <!-- <ion-icon color="myBlueColour" ios="ios-add-circle" md="md-add-circle"></ion-icon> -->
+            <!-- [ngStyle]="{'color': userColour}" -->
+            <!-- <img style="width: 44px; height: 44px;" src="assets/img/stopLocateInverseDanger.png"> -->
+            <!-- this.icon = "assets/img/"+"pinPoiQR"+this.colorString+".png"; -->
+            <!-- <img style="width: 44px; height: 44px;" src={{icon}}> -->
+            <!-- <img style="width: 44px; height: 44px; position:fixed;" src={{iconAddUserColour}}>
+                <ion-icon ios="ios-add" md="md-add"></ion-icon>
+              </button> -->
+          </ion-col>
+        </ion-row>
       </ion-fab>
 
       <ion-fab right bottom #fab>
@@ -268,6 +315,21 @@
           <ion-icon name="md-arrow-dropdown-circle"></ion-icon>
         </button>
         <ion-fab-list side="bottom">
+          <button
+            ion-item
+            style="border-bottom: 1px solid #dedede"
+            *ngIf="isCurrentWorkspaceOwner && !isFinalMode"
+            (click)="closeFab(fab); openGameConfiguration()"
+          >
+            <ion-icon
+              item-start
+              ios="ios-game-controller-b"
+              md="md-game-controller-b"
+            ></ion-icon>
+
+            Configuración de Juego
+          </button>
+
           <ion-item
             *ngIf="isCurrentWorkspaceOwner"
             text-wrap
@@ -349,6 +411,7 @@
               </ion-option>
             </ion-select>
           </ion-item>
+
           <button
             style="border-bottom: 1px solid #dedede"
             *ngIf="isCurrentWorkspaceOwner && !isFinalMode"

@@ -65,7 +65,7 @@ export class MapService {
 
     let markerIcon: MarkerIcon = { size: { height: aSize, width: aSize } };
     let colourWithoutHash = hexColour.substring(1); //QUITO EL HASH
-    debugger;
+
     if (hasQRCode) {
       markerIcon.url = 'assets/img/pinPoiQR' + colourWithoutHash + '.png';
     } else {

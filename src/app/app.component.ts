@@ -209,7 +209,6 @@ export class MyApp {
     console.log('EL USER TENIA:');
     console.log(this.loggedUser);
     if (references.length != 0) {
-      debugger;
       this.getWorkspacesFromReferences(references);
     } else {
       this.loadedResources = this.loadedResources + 1; //SI NO TIENE REFERENCIAS TENGO QUE ASUMIR QUE YA SE CARGÓ
@@ -285,7 +284,6 @@ export class MyApp {
   }
 
   workspacePreviouslyImported(anIdWorkspace) {
-    debugger;
     if (this.myWorkSpacesAsCollaborator.length == 0) {
       return false;
     }
@@ -315,7 +313,7 @@ export class MyApp {
         .getWorkspaceFromReference(workspaceReference)
         .then((ws) => {
           ws.status = this.getCurrentStatus(ws.status.idStatus);
-          debugger;
+
           if (ws.collaborators) {
             //SI HAY COLABORADORES, BUSCO A VER SI ESTOY
             var collaboratorsArray = Object.keys(ws.collaborators).map(
@@ -547,9 +545,8 @@ export class MyApp {
     let workspacePreviouslyImported = this.workspacePreviouslyImported(
       workspaceReference.idWorkspace
     );
-    debugger;
+
     if (!wasMyWorkspace && !workspacePreviouslyImported) {
-      debugger;
       let importingWorkspace = this.createLoading('Uniéndose al workspace...');
       importingWorkspace.present();
       this.workspaceService
@@ -609,7 +606,6 @@ export class MyApp {
   }
 
   addWorkspaceAsCollaborator(anExternalWorkspace, collaboratorData) {
-    debugger;
     if (anExternalWorkspace.collaborators == undefined) {
       //CREO UNA LISTA ITERABLE DE COLABORADORES
       anExternalWorkspace.collaborators = new Array<any>();
@@ -650,13 +646,12 @@ export class MyApp {
   //ACA VA UN METODO DE SUSCRIPCION AL CAMBIO DE ESTADO
   buscarWorkspaceEnElListadoYActualizar(obj) {
     if (obj) {
-      debugger;
       let workspaceActualizado = this.myWorkSpacesAsCollaborator.find(function (
         ws
       ) {
         return obj.idWorkspace == ws.idWorkspace;
       });
-      debugger;
+
       let index = this.myWorkSpacesAsCollaborator.indexOf(workspaceActualizado);
       workspaceActualizado.status = this.getCurrentStatus(obj.idStatus);
       this.myWorkSpacesAsCollaborator[index] = workspaceActualizado;
@@ -667,13 +662,12 @@ export class MyApp {
     let allReferences = references.length;
     let referencesOk = 0;
     references.forEach((ref) => {
-      debugger;
       this.workspaceService.getWorkspaceFromReference(ref).then((ws) => {
         referencesOk = referencesOk + 1;
         /*SUBSCRIBE DE CADA WORKSPACE DE LA LISA */
         this.workspaceService.subscribeToWorkspaceStateChangeForList(ws, this);
         /*SUBSCRIBE DE CADA WORKSPACE DE LA LISTA */
-        debugger;
+
         let collaborators = Object.keys(ws.collaborators).map(function (index) {
           let col = ws.collaborators[index];
           return col;
@@ -731,7 +725,7 @@ export class MyApp {
 
   createWorkspace() {
     //GUARDA UN WORKSPACE CON UN EDIFICIO ASOCIADO EN OTRA COLECCIÓN EN LA BASE
-    debugger;
+
     let newWorkspaceModal = this.modalCtrl.create(
       ModalNewWorkspace,
       this.edificios
@@ -741,7 +735,7 @@ export class MyApp {
       let message;
       if (ws) {
         //SI GUARDO ALGO CON LA VENTANA MODAL
-        debugger;
+
         if (!this.nameUsedInOtherWorkspace(ws.name)) {
           let loadingSavingWS = this.createLoading('Creando workspace...');
           loadingSavingWS.present();
@@ -798,9 +792,7 @@ export class MyApp {
     toast.present();
   }
 
-  inspeccionarDatos() {
-    debugger;
-  }
+  inspeccionarDatos() {}
 
   setWorkspaceState(newStringStatus) {
     if (newStringStatus) {
@@ -840,7 +832,7 @@ export class MyApp {
     strategyToShowInformationPoIWLAN: StrategyToShowInformation;
     strategyToShowInformationPoIQR: StrategyToShowInformation;
     */
-    debugger;
+
     if (aWorkspace.strategyToShowPoIWLAN) {
       aWorkspace.strategyToShowPoIWLAN = this.workspaceService.getStrategyToShowMarker(
         aWorkspace.strategyToShowPoIWLAN.idStrategyShowMarker
@@ -854,8 +846,9 @@ export class MyApp {
       aWorkspace.strategyToShowInformationPoIQR = this.workspaceService.getStrategyToShowInformation(
         aWorkspace.strategyToShowInformationPoIQR.idStrategyShowInformation
       );
-      console.log(aWorkspace);
     }
+
+    console.log(aWorkspace);
     let loadWS = this.createLoading('Cargando workspace...');
     loadWS.present();
     this.buildingsService
@@ -900,7 +893,7 @@ export class MyApp {
     ); //Le paso la lista de workspaces
     workspacesListModal.onDidDismiss((ws) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
-      debugger;
+
       if (ws != undefined) {
         this.openWorkspace(ws);
       }
@@ -951,7 +944,7 @@ export class MyApp {
     ); //Le paso la lista de workspaces
     workspacesListModal.onDidDismiss((ws) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
-      debugger;
+
       if (ws != undefined) {
         this.openWorkspace(ws);
       }

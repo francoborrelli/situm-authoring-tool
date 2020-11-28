@@ -1,0 +1,135 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title style="text-align: center"
+      >{{initial ? 'Configuración Inicial' : 'Configuración del
+      Juego'}}</ion-card-title
+    >
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-item style="padding-left: 0px">
+      <ion-label style="color: #1576c9; font-size: 12px"
+        >Tipo de Preguntas</ion-label
+      >
+      <ion-select
+        [disabled]="!initial"
+        style="max-width: 100%"
+        placeholder="Seleccione"
+        cancelText="Cancelar"
+        [(ngModel)]="configuration.type"
+        class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
+      >
+        <ion-option value="positionated"
+          ><p>
+            Contextuales - Las preguntas se crearán al crear un lugar relevante.
+          </p></ion-option
+        >
+        <ion-option value="free">
+          Libres - Las preguntas se asociarán a lugares relevantes
+          dinámicamente.
+        </ion-option>
+      </ion-select>
+    </ion-item>
+
+    <p
+      style="color: #696868; font-style: italic"
+      *ngIf="configuration && configuration.type === 'positionated'"
+    >
+      Las preguntas se crearán al crear un lugar relevante.
+    </p>
+
+    <p
+      style="color: #696868; font-style: italic"
+      *ngIf="configuration && configuration?.type === 'free'"
+    >
+      Las preguntas se asociarán a lugares relevantes dinámicamente.
+    </p>
+
+    <ion-item
+      style="padding-left: 0px"
+      *ngIf="configuration && configuration.type === 'free'"
+    >
+      <ion-label color="myBlueColour" stacked
+        >Rotar preguntas durante el juego</ion-label
+      >
+      <ion-toggle [(ngModel)]="configuration.rotate"></ion-toggle>
+    </ion-item>
+
+    <div style="width: 100%; border-bottom: 1px solid #e6d8d8"></div>
+
+    <ion-item style="padding-left: 0px">
+      <ion-label color="myBlueColour" stacked>Registrar tiempo</ion-label>
+      <ion-toggle [(ngModel)]="configuration.time"></ion-toggle>
+    </ion-item>
+
+    <ion-item style="padding-left: 0px">
+      <ion-label color="myBlueColour" stacked>Registrar Puntaje</ion-label>
+      <ion-toggle [(ngModel)]="configuration.showScore"></ion-toggle>
+    </ion-item>
+
+    <ion-item
+      style="padding-left: 0px"
+      *ngIf="configuration && configuration.showScore"
+    >
+      <ion-label color="myBlueColour" stacked>Puntos por Pregunta:</ion-label>
+      <ion-input
+        min="1"
+        max="20"
+        type="number"
+        placeholder="Puntaje"
+        [(ngModel)]="configuration.score"
+        >{{ configuration.score }}</ion-input
+      >
+    </ion-item>
+
+    <ion-item style="padding-left: 0px">
+      <ion-label color="myBlueColour" stacked>Mostrar Ranking</ion-label>
+      <ion-toggle [(ngModel)]="configuration.ranking"></ion-toggle>
+    </ion-item>
+
+    <ion-item style="padding-left: 0px">
+      <ion-label color="myBlueColour" stacked
+        >Incluir Código de Finalización</ion-label
+      >
+      <ion-toggle [(ngModel)]="configuration.showCode"></ion-toggle>
+    </ion-item>
+
+    <ion-item
+      style="padding-left: 0px"
+      *ngIf="configuration && configuration.showCode"
+    >
+      <ion-label color="myBlueColour" stacked
+        >Código de Finalización:</ion-label
+      >
+      <ion-input
+        min="1"
+        max="20"
+        type="text"
+        [(ngModel)]="configuration.code"
+        placeholder="Código de Finalización"
+        >{{ configuration.score }}</ion-input
+      >
+    </ion-item>
+
+    <div style="text-align: center">
+      <button
+        *ngIf="!initial"
+        ion-button
+        color="danger"
+        (click)="dismissWithoutSave()"
+      >
+        Cancelar
+      </button>
+      <button
+        ion-button
+        color="myBlueColour"
+        [disabled]="
+          !configuration.type || (configuration.showScore && !configuration.score)|| (configuration.showCode && !configuration.code)
+        "
+        (click)="save()"
+      >
+        Guardar
+      </button>
+    </div>
+  </ion-card-content>
+</ion-card>

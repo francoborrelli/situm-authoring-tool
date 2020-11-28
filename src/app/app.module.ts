@@ -15,6 +15,7 @@ import { MapButtonComponent } from '../components/mapButton/mapButton';
 import { ModalContentPage } from '../pages/modal/modal';
 import { QRCodePage } from '../pages/modalQR/modalQR';
 import { ModalLogin } from '../pages/login/modalLogin';
+import { AddQuestion } from '../pages/addQuestion/addQuestion';
 import { ModalNewWorkspace } from '../pages/nuevoWorkspace/newWorkspace';
 import { ShareWorkspaceViaQR } from '../pages/modalShareWorkspaceViaQR/modalShareWorkspaceViaQR';
 import { ModalWorkspacesList } from '../pages/modalWorkspacesList/modalWorkspacesList';
@@ -36,6 +37,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { PoisService } from '../services/pois.service';
 import { BuildingsService } from '../services/buildings.service';
 import { NuevoPoiPage } from '../pages/nuevoPoi/nuevoPoi';
+import { ModalGameConfiguration } from '../pages/modalGameConfiguration/modalGameConfiguration';
+
 import { MapService } from '../services/map.service';
 import { LoginService } from '../services/login.service';
 import { WorkspaceService } from '../services/workspace.service';
@@ -70,6 +73,8 @@ const { firebaseConfig } = environment;
     NuevoPoiPage,
     QRCodePage,
     ModalLogin,
+    AddQuestion,
+    ModalGameConfiguration,
     ModalNewWorkspace,
     ModalWorkspacesList,
     ShareWorkspaceViaQR,
@@ -104,6 +109,8 @@ const { firebaseConfig } = environment;
     ShareWorkspaceViaQR,
     ModalInformation,
     ModalDeletePOI,
+    AddQuestion,
+    ModalGameConfiguration,
     EndGameModal,
     RankingModal,
     ModalFilterPoi,

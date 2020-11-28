@@ -29,7 +29,6 @@ export class ModalWorkspacesList {
     private modalCtrl: ModalController,
     private workspaceService: WorkspaceService
   ) {
-    debugger;
     this.workspaces = this.navParams.get('workspaces') || [];
     this.tipoWorkspaces = this.navParams.get('tipoWorkspaces');
     this.loggedUser = this.navParams.get('loggedUser');
@@ -62,7 +61,6 @@ export class ModalWorkspacesList {
       });
   }
   openWorkspaceByStatus(aWorkspace) {
-    debugger;
     let isOwner = this.isOwner(aWorkspace);
     aWorkspace.status.openWorkspace(this, isOwner, aWorkspace); //STATE PATTERN
   }
