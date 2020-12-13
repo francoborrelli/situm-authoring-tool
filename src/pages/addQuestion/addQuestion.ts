@@ -8,7 +8,6 @@ import {
   Keyboard,
 } from 'ionic-angular';
 
-import { Camera } from '@ionic-native/camera';
 import { PoisService } from '../../services/pois.service';
 
 import {
@@ -58,6 +57,7 @@ export class AddQuestion {
     this.qrAutorizado = false;
 
     this.newQuestion = {
+      ...this.navParams.get('question'),
       options: [
         { name: '', correct: '' },
         { name: '', correct: '' },
@@ -95,6 +95,13 @@ export class AddQuestion {
     ];
   }
 
+  correctControl(control) {
+    this.newQuestion.options.forEach((element) => {
+      element.correct = false;
+    });
+    control.correct = true;
+    this.newQuestion.options = [...this.newQuestion.options];
+  }
   removeControl(control) {
     this.newQuestion.options = this.newQuestion.options.filter(
       (a) => a !== control
@@ -280,9 +287,26 @@ export class AddQuestion {
   }
 
   get completeQuestion() {
-    return (
-      !this.hasQuestions ||
-      (this.newQuestion.question && this.newQuestion.answer)
-    );
+    if (!this.hasQuestions) return;
+
+    if (!this.newQuestion.question) return false;
+
+    if (this.newQuestion.type === 'TrueFalse') {
+      return false;
+    }
+
+    if (this.newQuestion.type === 'MultipleChoice') {
+      return (
+        this.newQuestion.options &&
+        this.newQuestion.options.length >= 2 &&
+        this.newQuestion.options.every((e) => !!e.text)
+      );
+    }
+
+    if (this.newQuestion.type === 'Closed') {
+      return !!this.newQuestion.correctAnwser;
+    }
+
+    return true;
   }
 }

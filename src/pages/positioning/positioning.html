@@ -330,6 +330,21 @@
             Configuración de Juego
           </button>
 
+          <button
+            ion-item
+            style="border-bottom: 1px solid #dedede"
+            *ngIf="isCurrentWorkspaceOwner && !isFinalMode"
+            (click)="closeFab(fab); openQuestionsModal()"
+          >
+            <ion-icon
+              item-start
+              ios="ios-game-controller-b"
+              md="md-game-controller-b"
+            ></ion-icon>
+
+            Preguntas del juego
+          </button>
+
           <ion-item
             *ngIf="isCurrentWorkspaceOwner"
             text-wrap

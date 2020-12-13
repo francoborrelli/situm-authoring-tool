@@ -34,9 +34,11 @@ import { PermissionsService } from '../../services/permissions';
 import { PoisService, Poi, Creator } from '../../services/pois.service';
 import { LoginService } from '../../services/login.service';
 import { BuildingsService } from '../../services/buildings.service';
+import { QuestionService } from '../../services/question.service';
 import { MapService } from '../../services/map.service';
 import { ModalContentPage } from '../modal/modal';
 import { NuevoPoiPage } from '../nuevoPoi/nuevoPoi';
+import { QuestionsInformationModal } from '../questionsModal/questionsModal';
 import { AddQuestion } from '../addQuestion/addQuestion';
 
 import { ModalGameConfiguration } from '../modalGameConfiguration/modalGameConfiguration';
@@ -64,7 +66,7 @@ import { Camera } from '@ionic-native/camera';
 import { ModalFilterPoi } from '../modalFilterPoi/modalFilterPoi';
 
 import { ModalWorkspaceRelease } from '../modalWorkspaceRelease/modalWorkspaceRelease';
-import { timer, Subscription, Subject } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 
 import { GameService } from '../../services/game.service';
 import { environment } from '../../env/environment';
@@ -233,6 +235,7 @@ export class PositioningPage {
     public alertCtrl: AlertController,
     private permissionsService: PermissionsService,
     private poisService: PoisService,
+    private questionService: QuestionService,
     private buildingsService: BuildingsService,
     private modalCtrl: ModalController,
     private mapService: MapService,
@@ -1824,6 +1827,26 @@ export class PositioningPage {
       });
   }
 
+  saveQuestionInfo(aPoi) {
+    let message;
+    let loadingSavePoi = this.createLoading('Guardando pregunta');
+    this.questionService
+      .saveQuestion(this.currentWorkspace.idWorkspace, aPoi)
+      .then((resPromesa) => {
+        if (resPromesa) {
+          message = 'Se ha guardado la pregunta correctamente.';
+          this.presentToast(message, 'top', null);
+          this.canChangeFloor = true; //Libero que pueda cambiar de piso el usuario
+          this.hideLoading(loadingSavePoi);
+        } else {
+          message = 'Hubo un error al guardar el PoI, intente nuevamente.';
+          this.presentToast(message, 'top', null);
+          this.hideLoading(loadingSavePoi);
+        }
+      })
+      .catch((e) => console.log(e));
+  }
+
   private repositionAndSave(aPoi) {
     let loadingIndoorPositioning = this.createLoading('Reposicionando...');
     loadingIndoorPositioning.present();
@@ -1872,25 +1895,21 @@ export class PositioningPage {
     question.identifier = Date.now().toString();
     question.creator = this.nameUserLogged;
     question.visible = true;
+    question.buildingIdentifier = this.currentWorkspace.buildingIdentifier;
+
     let addQuestionModal = this.modalCtrl.create(AddQuestion, {
-      nuevoPoi: question,
+      question,
       workspace: this.currentWorkspace,
       loggedUser: this.userLogged,
     }); //Le paso el poi casi completo
-    addQuestionModal.onDidDismiss((poiResultado) => {
+    addQuestionModal.onDidDismiss((questionResultado) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
 
       let message;
       this.canChangeFloor = false;
-      if (poiResultado != undefined) {
-        // if (this.badPosition(poiResultado)) {
-        //   //A VECES LA POSICION SE LE ANULAN PARAMETROS, POR ESO ES BUENO CHEQUEARLO
-        //   console.log('LA POSICION NO ERA BUENA');
-        //   this.stopPositioning(null);
-        //   this.repositionAndSave(poiResultado);
-        // } else {
-        //   this.savePoi(poiResultado);
-        // }
+      if (questionResultado != undefined) {
+        console.log(questionResultado);
+        this.saveQuestionInfo(questionResultado);
       }
       this.savingPoi = false; //Ya se cerró la ventana.
     });
@@ -3122,6 +3141,22 @@ export class PositioningPage {
 
   public openGameConfiguration = (initial = false) => {
     let OpenConfiguration = this.modalCtrl.create(ModalGameConfiguration, {
+      workspace: this.currentWorkspace,
+      loggedUser: this.userLogged,
+      initial,
+    });
+
+    //Actualizo el workspace
+    OpenConfiguration.onDidDismiss((workspace) => {
+      if (workspace) {
+        this.currentWorkspace = workspace;
+      }
+    });
+    OpenConfiguration.present();
+  };
+
+  public openQuestionsModal = (initial = false) => {
+    let OpenConfiguration = this.modalCtrl.create(QuestionsInformationModal, {
       workspace: this.currentWorkspace,
       loggedUser: this.userLogged,
       initial,

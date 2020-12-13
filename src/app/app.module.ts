@@ -34,9 +34,12 @@ import {
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 //Imports de mis servicios
+import { QuestionService } from '../services/question.service';
 import { PoisService } from '../services/pois.service';
 import { BuildingsService } from '../services/buildings.service';
 import { NuevoPoiPage } from '../pages/nuevoPoi/nuevoPoi';
+import { QuestionsInformationModal } from '../pages/questionsModal/questionsModal';
+
 import { ModalGameConfiguration } from '../pages/modalGameConfiguration/modalGameConfiguration';
 
 import { MapService } from '../services/map.service';
@@ -71,6 +74,7 @@ const { firebaseConfig } = environment;
     MapButtonComponent,
     ModalContentPage,
     NuevoPoiPage,
+    QuestionsInformationModal,
     QRCodePage,
     ModalLogin,
     AddQuestion,
@@ -102,6 +106,7 @@ const { firebaseConfig } = environment;
     PositioningPage,
     ModalContentPage,
     NuevoPoiPage,
+    QuestionsInformationModal,
     QRCodePage,
     ModalLogin,
     ModalNewWorkspace,
@@ -126,6 +131,7 @@ const { firebaseConfig } = environment;
     Diagnostic,
     PermissionsService,
     PoisService,
+    QuestionService,
     BuildingsService,
     LoginService,
     GameService,

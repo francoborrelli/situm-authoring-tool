@@ -38,6 +38,15 @@
           [(ngModel)]="control.text"
         ></ion-input>
         <button
+          item-end
+          ion-button
+          color="success"
+          [disabled]="control.correct"
+          (click)="correctControl(control)"
+        >
+          <ion-icon ios="ios-checkmark" md="md-checkmark"></ion-icon>
+        </button>
+        <button
           *ngIf="newQuestion.options.length > 2"
           ion-button
           item-end
@@ -85,7 +94,7 @@
 
       <ion-item
         style="padding-left: 0px"
-        *ngIf="newQuestion.type === 'TrueFalse'"
+        *ngIf="newQuestion.type === 'TrueFalse' && !newQuestion.trueFalseAnwser"
       >
         <ion-label color="myBlueColour" stacked>Respuesta Correcta:</ion-label>
         <ion-textarea
