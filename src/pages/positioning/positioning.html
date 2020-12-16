@@ -333,7 +333,13 @@
           <button
             ion-item
             style="border-bottom: 1px solid #dedede"
-            *ngIf="isCurrentWorkspaceOwner && !isFinalMode"
+            *ngIf="
+                isCurrentWorkspaceOwner  &&
+                currentFloor &&
+                positioning == true &&
+                !isFinalMode &&
+                mustShowAddPoiButton && currentWorkspace.configuration && currentWorkspace.configuration.type === 'free'
+              "
             (click)="closeFab(fab); openQuestionsModal()"
           >
             <ion-icon item-start ios="ios-help" md="md-help"></ion-icon>

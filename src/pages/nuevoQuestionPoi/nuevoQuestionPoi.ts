@@ -26,10 +26,10 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner'; //lee QR
 declare var cordova: any;
 
 @Component({
-  selector: 'page-nuevoPoi',
-  templateUrl: 'nuevoPoi.html',
+  selector: 'page-nuevoQuestionPoi',
+  templateUrl: 'nuevoQuestionPoi.html',
 })
-export class NuevoPoiPage {
+export class NuevoQuestionPoiPage {
   nuevoPoi: Poi;
   workspace: Workspace;
   qrOptionSelected: any;
@@ -41,6 +41,8 @@ export class NuevoPoiPage {
   modelQRPoi: string;
   loggedUser: any;
   keyword: any;
+  isEdit: any;
+  newQuestion: any;
 
   constructor(
     public platform: Platform,
@@ -58,13 +60,11 @@ export class NuevoPoiPage {
     this.nuevoPoi = this.navParams.get('nuevoPoi');
     this.workspace = this.navParams.get('workspace');
     this.loggedUser = this.navParams.get('loggedUser');
-    console.log(this.workspace);
+    this.isEdit = this.navParams.get('isEdit');
+
     this.qrAutorizado = false;
     this.options = ['Usando WLAN', 'Nuevo QR', 'QR Existente'];
     this.qrOptionSelected = 'Usando WLAN';
-
-    this.nuevoPoi.poiName = '';
-    this.nuevoPoi.hasQRCode = false;
 
     this.modelQRPoi = 'A';
     this.workspaceService.subscribeToWorkspaceStateChangesFromModal(
@@ -72,6 +72,22 @@ export class NuevoPoiPage {
       this
     );
     this.keyword = this.keyboard;
+
+    this.qrAutorizado = false;
+
+    if (this.isEdit) {
+      this.newQuestion = this.nuevoPoi.question;
+    } else {
+      this.nuevoPoi.poiName = '';
+      this.nuevoPoi.hasQRCode = false;
+
+      this.newQuestion = {
+        options: [
+          { name: '', correct: '' },
+          { name: '', correct: '' },
+        ],
+      };
+    }
   }
   public unregisterBackButtonAction: any; //Boton hacia atrás
 
@@ -79,6 +95,26 @@ export class NuevoPoiPage {
     loading.dismiss();
     this.nuevoPoi.base64 = aBase64;
     this.workspace.status.addPoi(this, this.isOwner(), this.nuevoPoi); //STATE PATTERN
+  }
+
+  addControl() {
+    this.newQuestion.options = [
+      ...this.newQuestion.options,
+      { name: '', correct: '' },
+    ];
+  }
+
+  correctControl(control) {
+    this.newQuestion.options.forEach((element) => {
+      element.correct = false;
+    });
+    control.correct = true;
+    this.newQuestion.options = [...this.newQuestion.options];
+  }
+  removeControl(control) {
+    this.newQuestion.options = this.newQuestion.options.filter(
+      (a) => a !== control
+    );
   }
 
   notOkEncrypt(loading, err) {
@@ -249,7 +285,8 @@ export class NuevoPoiPage {
     this.ionModal.style.opacity = '1';
   }
 
-  private acceptAddPoi() {
+  public acceptAddPoi() {
+    this.nuevoPoi.question = this.newQuestion;
     this.modelQRPoi = this.nuevoPoi.poiName;
     let loading;
     this.nuevoPoi.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
@@ -319,18 +356,27 @@ export class NuevoPoiPage {
     );
   }
 
-  get isContextualGame() {
-    const { kind } = this.workspace;
-    return (
-      kind &&
-      kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
-      this.workspace.configuration.type === 'positionated'
-    );
-  }
-
   get completeQuestion() {
-    return (
-      !this.hasQuestions || (this.nuevoPoi.question && this.nuevoPoi.answer)
-    );
+    if (!this.hasQuestions) return;
+
+    if (!this.newQuestion.question) return false;
+
+    if (this.newQuestion.type === 'TrueFalse') {
+      return false;
+    }
+
+    if (this.newQuestion.type === 'MultipleChoice') {
+      return (
+        this.newQuestion.options &&
+        this.newQuestion.options.length >= 2 &&
+        this.newQuestion.options.every((e) => !!e.text)
+      );
+    }
+
+    if (this.newQuestion.type === 'Closed') {
+      return !!this.newQuestion.correctAnwser;
+    }
+
+    this.nuevoPoi.infoHtml && this.nuevoPoi.poiName;
   }
 }

@@ -18,7 +18,7 @@ export class Creator {
 export class Poi {
   identifier: string;
   buildingIdentifier: string;
-  question: string;
+  question: any;
   answer: string;
   cartesianCoordinate: {
     x: string;
@@ -57,6 +57,7 @@ export class Poi {
   base64: string;
   asociatedTrigger: string;
   visible: boolean;
+  options: any;
 }
 
 @Injectable()

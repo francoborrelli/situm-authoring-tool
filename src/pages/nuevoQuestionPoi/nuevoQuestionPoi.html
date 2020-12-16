@@ -1,0 +1,235 @@
+<ion-card>
+  <ion-card-content>
+    <ion-scroll scrollY="true" style="min-height: 65vh">
+      <!-- <ion-item-divider style="margin-bottom: 10px">
+        <ion-label>
+          <h2 ion-text>Información del Lugar</h2>
+        </ion-label>
+      </ion-item-divider> -->
+
+      <ion-row [hidden]="isEdit || (keyword && keyword.isOpen())">
+        <ion-col col-6 colSixNoPadding>
+          <ion-item style="padding-left: 0px">
+            <ion-thumbnail item-start style="margin: 0; padding: 0px">
+              <div *ngIf="nuevoPoi.infoHtml">
+                <img
+                  [src]="nuevoPoi.infoHtml"
+                  [(ngModel)]="nuevoPoi.infoHtml"
+                  ngDefaultControl
+                  style="width: 100%; height: 100%"
+                />
+              </div>
+              <div *ngIf="!nuevoPoi.infoHtml">
+                <img
+                  src="assets/img/loadImagePlease.png"
+                  style="width: 100%; height: 100%"
+                />
+              </div>
+            </ion-thumbnail>
+          </ion-item>
+        </ion-col>
+        <ion-col col-6>
+          <ion-item style="margin: 0px; padding-left: 0px">
+            <button
+              ion-button
+              block
+              icon-start
+              full
+              color="myBlueColour"
+              (click)="tomarFoto()"
+              style="width: 100% !important; margin-top: 0% !important"
+            >
+              <ion-icon ios="ios-camera" md="md-camera"></ion-icon>
+              Tomar foto
+            </button>
+          </ion-item>
+          <ion-item text-wrap style="margin-top: 0px; padding-left: 0px">
+            <div style="color: red; font-size: 1.7 !important">
+              <span
+                style="color: black !important; font-weight: bold !important"
+                >Nota:</span
+              >
+              Se recomienda en forma horizontal y todos los campos son
+              requeridos.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-item style="padding-left: 0px; padding-top: 2%" *ngIf="!isFreeGame">
+        <ion-label color="myBlueColour" stacked>Nombre / Título:</ion-label>
+        <ion-input
+          type="text"
+          min="1"
+          max="20"
+          placeholder="Este es el título del PoI"
+          [(ngModel)]="nuevoPoi.poiName"
+          >{{ nuevoPoi.poiName }}</ion-input
+        >
+      </ion-item>
+      <!--
+      <ion-item-divider style="margin-bottom: 10px">
+        <ion-label>
+          <h2 ion-text>Información de la pregunta</h2>
+        </ion-label>
+      </ion-item-divider> -->
+
+      <ion-item style="padding-left: 0px" *ngIf="hasQuestions">
+        <ion-label color="myBlueColour" stacked>Pregunta:</ion-label>
+        <ion-textarea
+          type="text"
+          min="5"
+          max="500"
+          placeholder="Esta es una pregunta para el PoI"
+          [(ngModel)]="newQuestion.question"
+          >{{ newQuestion.question }}</ion-textarea
+        >
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label style="color: #1576c9; font-size: 12px"
+          >Tipo de pregunta</ion-label
+        >
+        <ion-select
+          style="max-width: 100%"
+          placeholder="Seleccione"
+          cancelText="Cancelar"
+          [(ngModel)]="newQuestion.type"
+          class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
+        >
+          <ion-option value="TrueFalse"><p>Verdadero/Falso</p></ion-option>
+          <ion-option value="MultipleChoice">Multiple Choice</ion-option>
+          <ion-option value="Closed">Pregunta Cerrada</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ng-container *ngIf="newQuestion.type === 'MultipleChoice'">
+        <ion-item *ngFor="let control of newQuestion.options; let i = index">
+          <ion-input
+            required
+            type="text"
+            placeholder="Texto de la opción"
+            [(ngModel)]="control.text"
+          ></ion-input>
+          <button
+            item-end
+            ion-button
+            color="success"
+            [disabled]="control.correct"
+            (click)="correctControl(control)"
+          >
+            <ion-icon ios="ios-checkmark" md="md-checkmark"></ion-icon>
+          </button>
+          <button
+            *ngIf="newQuestion.options.length > 2"
+            ion-button
+            item-end
+            (click)="removeControl(control)"
+            color="danger"
+          >
+            <ion-icon ios="ios-remove-circle" md="md-remove-circle"></ion-icon>
+          </button>
+        </ion-item>
+
+        <div style="text-align: center" *ngIf="newQuestion.options.length < 4">
+          <button ion-button color="myBlueColour" (click)="addControl()">
+            Agregar otra opción
+          </button>
+        </div>
+      </ng-container>
+
+      <ion-list
+        radio-group
+        [(ngModel)]="newQuestion.trueFalseAnwser"
+        *ngIf="newQuestion.type === 'TrueFalse'"
+      >
+        <ion-list-header
+          style="
+            padding-left: 0px;
+            margin-bottom: 0px;
+            margin-top: -19px;
+            border-top: none;
+            color: #1576c9;
+            font-size: 12px;
+          "
+        >
+          Respuesta:
+        </ion-list-header>
+
+        <ion-item>
+          <ion-label>Falso</ion-label>
+          <ion-radio value="false"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Verdadero</ion-label>
+          <ion-radio value="true"></ion-radio>
+        </ion-item>
+
+        <ion-item
+          style="padding-left: 0px"
+          *ngIf="newQuestion.type === 'TrueFalse' && !newQuestion.trueFalseAnwser"
+        >
+          <ion-label color="myBlueColour" stacked
+            >Respuesta Correcta:</ion-label
+          >
+          <ion-textarea
+            type="text"
+            min="5"
+            max="500"
+            placeholder="Texto a mostrar en caso de que responda incorrectamente."
+            [(ngModel)]="newQuestion.correctAnwserText"
+            >{{ newQuestion.correctAnwserText }}</ion-textarea
+          >
+        </ion-item>
+      </ion-list>
+
+      <ion-item style="padding-left: 0px" *ngIf="newQuestion.type === 'Closed'">
+        <ion-label color="myBlueColour" stacked>Respuesta Esperada:</ion-label>
+        <ion-textarea
+          type="text"
+          min="5"
+          max="500"
+          placeholder="Respuesta esperada."
+          [(ngModel)]="newQuestion.correctAnwser"
+          >{{ newQuestion.correctAnwserText }}</ion-textarea
+        >
+      </ion-item>
+
+      <!-- <ion-item-divider style="margin-bottom: 10px">
+        <ion-label>
+          <h2 ion-text>Tipo de posicionamiento</h2>
+        </ion-label>
+      </ion-item-divider> -->
+
+      <ion-item style="padding-left: 0px">
+        <ion-label style="color: black">Brindar el PoI:</ion-label>
+        <ion-select
+          style="max-width: 100%"
+          (ionChange)="printElection($event)"
+          class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
+          [(ngModel)]="qrOptionSelected"
+        >
+          <ion-option *ngFor="let option of options" value="{{ option }}">
+            {{ option }}
+          </ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-scroll>
+    <div style="text-align: center">
+      <button ion-button color="danger" (click)="dismissWithoutSave()">
+        Cancelar
+      </button>
+      <button
+        ion-button
+        color="myBlueColour"
+        [disabled]="
+          !completeQuestion
+        "
+        (click)="acceptAddPoi()"
+      >
+        Aceptar
+      </button>
+    </div>
+  </ion-card-content>
+</ion-card>

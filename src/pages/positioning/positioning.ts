@@ -74,6 +74,7 @@ import { take, map } from 'rxjs/operators';
 
 import { EndGameModal } from '../game/endGameModal/endGameModal';
 import { RankingModal } from '../game/rankingModal/rankingModal';
+import { NuevoQuestionPoiPage } from '../nuevoQuestionPoi/nuevoQuestionPoi';
 //import { Situm, Fixed } from '../../services/positioning.service';
 declare var cordova: any;
 
@@ -1934,11 +1935,15 @@ export class PositioningPage {
     primerPoi.colour = this.userColour;
     primerPoi.creator = this.nameUserLogged;
     primerPoi.visible = true;
-    let nuevoPoiModal = this.modalCtrl.create(NuevoPoiPage, {
-      nuevoPoi: primerPoi,
-      workspace: this.currentWorkspace,
-      loggedUser: this.userLogged,
-    }); //Le paso el poi casi completo
+
+    let nuevoPoiModal = this.modalCtrl.create(
+      this.isContextualGame ? NuevoQuestionPoiPage : NuevoPoiPage,
+      {
+        nuevoPoi: primerPoi,
+        workspace: this.currentWorkspace,
+        loggedUser: this.userLogged,
+      }
+    ); //Le paso el poi casi completo
     nuevoPoiModal.onDidDismiss((poiResultado) => {
       //CUANDO SE CIERRE EL MODAL VUELVE CON DATOS
 
@@ -3170,4 +3175,16 @@ export class PositioningPage {
     });
     OpenConfiguration.present();
   };
+
+
+ get isContextualGame() {
+    const { kind } = this.currentWorkspace;
+    return (
+      kind &&
+      kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
+      this.currentWorkspace.configuration.type === 'positionated'
+    );
+  }
+
 }
+

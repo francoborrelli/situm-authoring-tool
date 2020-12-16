@@ -7,6 +7,7 @@ import {
   ModalController,
   Events,
   LoadingController,
+  NavController,
 } from 'ionic-angular';
 import { ModalDeletePOI } from '../modalDeletePoi/modalDeletePoi';
 import { PoisService, Poi } from '../../services/pois.service';
@@ -21,6 +22,7 @@ import {
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner'; //lee QR
 import { GameService } from '../../services/game.service';
 import { environment } from '../../env/environment';
+import { NuevoQuestionPoiPage } from '../nuevoQuestionPoi/nuevoQuestionPoi';
 
 @Component({
   selector: 'page-modal',
@@ -62,6 +64,7 @@ export class ModalContentPage {
     private qrScanner: QRScanner,
     private zone: NgZone,
     public events: Events,
+    private navCtrl: NavController,
     public loadingCtrl: LoadingController,
     private gameService: GameService
   ) {
@@ -364,15 +367,34 @@ export class ModalContentPage {
   }
 
   switchEditionMode() {
-    this.zone.run(() => {
-      //run the code that should update the view
-      if (this.editionMode) {
-        this.editionMode = false;
-      } else {
-        this.editedPoi = Object.assign({}, this.poi);
-        this.editionMode = true;
-      }
-    });
+    if (this.poi.question && !this.editionMode) {
+      let nuevoPoiModal = this.modalCtrl.create(NuevoQuestionPoiPage, {
+        nuevoPoi: this.poi,
+        workspace: this.workspace,
+        loggedUser: this.userLogged,
+        isEdit: true,
+      });
+      nuevoPoiModal.onDidDismiss((poiResultado) => {
+        if (poiResultado != undefined) {
+          this.editedPoi = poiResultado;
+          this.saveChanges();
+        }
+      });
+      try {
+        this.navCtrl.pop();
+      } catch (error) {}
+      nuevoPoiModal.present();
+    } else {
+      this.zone.run(() => {
+        //run the code that should update the view
+        if (this.editionMode) {
+          this.editionMode = false;
+        } else {
+          this.editedPoi = Object.assign({}, this.poi);
+          this.editionMode = true;
+        }
+      });
+    }
   }
 
   alertText(aTitle, aSubTitle) {
@@ -459,6 +481,22 @@ export class ModalContentPage {
 
   get isFinal() {
     return this.statusString === 'VersionFinalPublica';
+  }
+
+  get expectedAnswer() {
+    if (this.poi.question) {
+      switch (this.poi.question.type) {
+        case 'TrueFalse':
+          return this.poi.question.trueFalseAnwser ? 'Verdadero' : 'Falso';
+        case 'MultipleChoice':
+          return this.poi.question.options.filter((a) => a.correct)[0].text;
+        case 'Closed':
+          return this.poi.question.correctAnwser;
+        default:
+          return false;
+      }
+    }
+    return false;
   }
 
   get isFreeGame() {

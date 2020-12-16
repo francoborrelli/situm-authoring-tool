@@ -24,7 +24,21 @@
         <b>Se brinda el PoI: </b>{{ poi.asociatedTrigger }}
       </p>
 
-      <p *ngIf="poi.question" class="question">{{ poi.question }}</p>
+      <p *ngIf="poi.question" style="margin-top: 10px">
+        <b>Pregunta: </b>{{ poi.question.question }}
+      </p>
+
+      <p *ngIf="poi.question">
+        <b>Tipo de Pregunta: </b>{{ poi.question.type === 'TrueFalse' ?
+        'Verdadero/Falso' : poi.question.type === 'MultipleChoice' ? 'Multiple
+        Choice' : 'Pregunta Cerrada' }}
+      </p>
+
+      <p *ngIf="poi.question">
+        <b>Respuesta esperada: </b>
+        {{expectedAnswer}}
+      </p>
+
       <!-- final user view -->
 
       <ion-grid *ngIf="!editionMode && !mustShowEditAndDelete">

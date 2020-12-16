@@ -63,6 +63,7 @@ import { EndGameModal } from '../pages/game/endGameModal/endGameModal';
 import { RankingModal } from '../pages/game/rankingModal/rankingModal';
 
 import { IonicStorageModule } from '@ionic/storage';
+import { NuevoQuestionPoiPage } from '../pages/nuevoQuestionPoi/nuevoQuestionPoi';
 
 const { firebaseConfig } = environment;
 
@@ -74,6 +75,7 @@ const { firebaseConfig } = environment;
     MapButtonComponent,
     ModalContentPage,
     NuevoPoiPage,
+    NuevoQuestionPoiPage,
     QuestionsInformationModal,
     QRCodePage,
     ModalLogin,
@@ -106,6 +108,7 @@ const { firebaseConfig } = environment;
     PositioningPage,
     ModalContentPage,
     NuevoPoiPage,
+    NuevoQuestionPoiPage,
     QuestionsInformationModal,
     QRCodePage,
     ModalLogin,
