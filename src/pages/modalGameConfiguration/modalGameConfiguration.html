@@ -52,19 +52,28 @@
       <ion-label color="myBlueColour" stacked
         >Rotar preguntas durante el juego</ion-label
       >
-      <ion-toggle [(ngModel)]="configuration.rotate"></ion-toggle>
+      <ion-toggle
+        [disabled]="isFinalMode"
+        [(ngModel)]="configuration.rotate"
+      ></ion-toggle>
     </ion-item>
 
     <div style="width: 100%; border-bottom: 1px solid #e6d8d8"></div>
 
     <ion-item style="padding-left: 0px">
       <ion-label color="myBlueColour" stacked>Registrar tiempo</ion-label>
-      <ion-toggle [(ngModel)]="configuration.time"></ion-toggle>
+      <ion-toggle
+        [disabled]="isFinalMode"
+        [(ngModel)]="configuration.time"
+      ></ion-toggle>
     </ion-item>
 
     <ion-item style="padding-left: 0px">
       <ion-label color="myBlueColour" stacked>Registrar Puntaje</ion-label>
-      <ion-toggle [(ngModel)]="configuration.showScore"></ion-toggle>
+      <ion-toggle
+        [disabled]="isFinalMode"
+        [(ngModel)]="configuration.showScore"
+      ></ion-toggle>
     </ion-item>
 
     <ion-item
@@ -77,6 +86,7 @@
         max="20"
         type="number"
         placeholder="Puntaje"
+        [disabled]="isFinalMode"
         [(ngModel)]="configuration.score"
         >{{ configuration.score }}</ion-input
       >
@@ -84,14 +94,20 @@
 
     <ion-item style="padding-left: 0px">
       <ion-label color="myBlueColour" stacked>Mostrar Ranking</ion-label>
-      <ion-toggle [(ngModel)]="configuration.ranking"></ion-toggle>
+      <ion-toggle
+        [disabled]="isFinalMode"
+        [(ngModel)]="configuration.ranking"
+      ></ion-toggle>
     </ion-item>
 
     <ion-item style="padding-left: 0px">
       <ion-label color="myBlueColour" stacked
         >Incluir Código de Finalización</ion-label
       >
-      <ion-toggle [(ngModel)]="configuration.showCode"></ion-toggle>
+      <ion-toggle
+        [disabled]="isFinalMode"
+        [(ngModel)]="configuration.showCode"
+      ></ion-toggle>
     </ion-item>
 
     <ion-item
@@ -105,13 +121,14 @@
         min="1"
         max="20"
         type="text"
+        [disabled]="isFinalMode"
         [(ngModel)]="configuration.code"
         placeholder="Código de Finalización"
         >{{ configuration.score }}</ion-input
       >
     </ion-item>
 
-    <div style="text-align: center">
+    <div style="text-align: center" *ngIf="!isFinalMode">
       <button
         *ngIf="!initial"
         ion-button

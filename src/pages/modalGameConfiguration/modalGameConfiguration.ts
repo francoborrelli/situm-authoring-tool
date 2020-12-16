@@ -35,6 +35,7 @@ export class ModalGameConfiguration {
 
   configuration = {};
   initial: boolean;
+  isFinalMode: boolean;
 
   constructor(
     public platform: Platform,
@@ -48,6 +49,7 @@ export class ModalGameConfiguration {
   ) {
     this.initial = this.navParams.get('initial');
     this.workspace = this.navParams.get('workspace');
+    this.isFinalMode = this.navParams.get('isFinalMode');
     this.loggedUser = this.navParams.get('loggedUser');
     this.configuration = this.workspace.configuration || {};
 

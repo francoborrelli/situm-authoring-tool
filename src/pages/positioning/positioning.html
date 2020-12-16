@@ -323,7 +323,7 @@
           <button
             ion-item
             style="border-bottom: 1px solid #dedede"
-            *ngIf="isCurrentWorkspaceOwner && !isFinalMode"
+            *ngIf="isCurrentWorkspaceOwner"
             (click)="closeFab(fab); openGameConfiguration()"
           >
             <ion-icon

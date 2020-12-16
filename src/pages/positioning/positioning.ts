@@ -3152,6 +3152,7 @@ export class PositioningPage {
     let OpenConfiguration = this.modalCtrl.create(ModalGameConfiguration, {
       workspace: this.currentWorkspace,
       loggedUser: this.userLogged,
+      isFinalMode: this.isFinalMode,
       initial,
     });
 
@@ -3180,8 +3181,7 @@ export class PositioningPage {
     OpenConfiguration.present();
   };
 
-
- get isContextualGame() {
+  get isContextualGame() {
     const { kind } = this.currentWorkspace;
     return (
       kind &&
@@ -3189,6 +3189,4 @@ export class PositioningPage {
       this.currentWorkspace.configuration.type === 'positionated'
     );
   }
-
 }
-
