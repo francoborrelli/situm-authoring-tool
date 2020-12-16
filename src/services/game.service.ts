@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 // RXJS
-import { map, takeUntil, tap, catchError } from 'rxjs/operators';
+import { map, takeUntil, catchError } from 'rxjs/operators';
 import { timer, BehaviorSubject, Subject, Observable, of } from 'rxjs';
 
 // Models
@@ -10,13 +10,10 @@ import { Poi } from './pois.service';
 import { orderBy, uniqBy } from 'lodash';
 
 // Contants
-import { environment } from '../env/environment';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Workspace } from './workspace.service';
 import { User } from './login.service';
 import { Storage } from '@ionic/storage';
-
-const { points = 50 } = environment;
 
 export interface Score {
   user: User;
@@ -188,7 +185,7 @@ export class GameService {
   };
 
   increaseScore(): void {
-    this.score += points;
+    this.score += Number(this.workspace.configuration.score) || 0;
   }
 
   reset(): void {
@@ -206,6 +203,3 @@ export class GameService {
     return `${this.workspaceId}-${this.userId}`;
   }
 }
-
-// scores.1571249719369.b39iRbu0Nwcrf7UucLEWTxwVahq1.user.userCredential.user.ja'
-// Error: Reference.set failed: First argument contains undefined in property 'scores.1571249719369.b39iRbu0Nwcrf7UucLEWTxwVahq1.user.userCredential.u

@@ -290,7 +290,12 @@
         </ion-row>
       </ion-fab>
 
-      <ion-fab right bottom #fab>
+      <ion-fab
+        right
+        bottom
+        #fab
+        *ngIf="currentWorkspace?.configuration && currentWorkspace.configuration.ranking"
+      >
         <ion-row>
           <ion-col>
             <button

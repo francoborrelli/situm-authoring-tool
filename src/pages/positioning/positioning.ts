@@ -3124,7 +3124,11 @@ export class PositioningPage {
 
   get displayTimer(): boolean {
     return (
-      this.hasGame && this.isPublicVersion && this.positioning && this.time > 0
+      this.hasGame &&
+      this.isPublicVersion &&
+      this.positioning &&
+      this.time > 0 &&
+      this.currentWorkspace.configuration.time
     );
   }
 
