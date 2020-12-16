@@ -39,6 +39,7 @@ export class AddQuestion {
   modelQRPoi: string;
   loggedUser: any;
   keyword: any;
+  isEdit = false;
 
   constructor(
     public platform: Platform,
@@ -54,15 +55,21 @@ export class AddQuestion {
   ) {
     this.workspace = this.navParams.get('workspace');
     this.loggedUser = this.navParams.get('loggedUser');
+    this.isEdit = this.navParams.get('isEdit');
+
     this.qrAutorizado = false;
 
-    this.newQuestion = {
-      ...this.navParams.get('question'),
-      options: [
-        { name: '', correct: '' },
-        { name: '', correct: '' },
-      ],
-    };
+    if (this.isEdit) {
+      this.newQuestion = this.navParams.get('question');
+    } else {
+      this.newQuestion = {
+        ...this.navParams.get('question'),
+        options: [
+          { name: '', correct: '' },
+          { name: '', correct: '' },
+        ],
+      };
+    }
 
     this.modelQRPoi = 'A';
     this.workspaceService.subscribeToWorkspaceStateChangesFromModal(
@@ -269,7 +276,6 @@ export class AddQuestion {
   public acceptAddPoi() {
     this.modelQRPoi = this.newQuestion.poiName;
     let loading;
-    this.newQuestion.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
     if (this.newQuestion.hasQRCode) {
       loading = this.createLoading('Encriptando QR');
       loading.present();

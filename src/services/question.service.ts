@@ -70,13 +70,12 @@ export class QuestionService {
     public toastCtrl: ToastController
   ) {}
 
-  public updateQuestion(anEditedPoi, aWorkspace) {
-    aWorkspace.building = null;
+  public updateQuestion(anEditedPoi, idWorkspace) {
     return new Promise<boolean>((resPromesa) => {
       this.angularfirebaseDB.database
         .ref(
-          'questions/' +
-            aWorkspace.idWorkspace +
+          this.tabla +
+            idWorkspace +
             '/' +
             anEditedPoi.creator +
             '/' +
@@ -134,15 +133,11 @@ export class QuestionService {
           response.reduce((a: any[], b) => {
             const elementsb = Object.keys(b).map((k) => {
               const element = b[k];
-
-              return Object.keys(element).map((e) => element[e]);
+              return element;
             });
             return [...a, ...elementsb];
           }, [])
-        ),
-        tap((response) => {
-          console.log('after map', response);
-        })
+        )
       );
   }
 
