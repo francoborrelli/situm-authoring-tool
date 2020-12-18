@@ -75,6 +75,7 @@ import { take, map } from 'rxjs/operators';
 import { EndGameModal } from '../game/endGameModal/endGameModal';
 import { RankingModal } from '../game/rankingModal/rankingModal';
 import { NuevoQuestionPoiPage } from '../nuevoQuestionPoi/nuevoQuestionPoi';
+import { ModalQuestionContentPage } from '../answerQuestionModal/answerQuestionModal';
 //import { Situm, Fixed } from '../../services/positioning.service';
 declare var cordova: any;
 
@@ -165,6 +166,7 @@ export class PositioningPage {
   private drawingMarkers;
   private iconAddUserColour;
   private iconAddQuestion;
+  private questions;
 
   private possiblesStatusesStrings = [
     'EdicionDelCreador',
@@ -2070,6 +2072,7 @@ export class PositioningPage {
     let newStatus = this.getSelectedWorkspaceStatus(newStatusString);
 
     if (newStatusString == 'VersionFinalPublica') {
+      this.isFinalMode = true;
       //LO ESTOY INTENTANDO CERRAR
       let modalWorkspaceRelease = this.modalCtrl.create(ModalWorkspaceRelease, {
         workspace: this.currentWorkspace,
@@ -2120,6 +2123,7 @@ export class PositioningPage {
       });
       modalWorkspaceRelease.present();
     } else {
+      this.isFinalMode = false;
       this.workspaceService
         .updateWorkspaceState(this.currentWorkspace, newStatus)
         .then((response) => {
@@ -2503,7 +2507,17 @@ export class PositioningPage {
                   this.dibujarMarcadoresCorrespondientes(true);
                 });
 
-                console.log(this.gameService);
+                if (this.isFreeGame)
+                  this.questionService
+                    .getAllQuestions(this.currentWorkspace.idWorkspace)
+                    .subscribe((q) => {
+                      this.questions = q;
+                      if (!this.currentWorkspace.configuration.rotate) {
+                        this.allPois.map((p, i) => {
+                          p.question = q[i];
+                        });
+                      }
+                    });
 
                 this.gameService
                   .startGame(
@@ -2800,9 +2814,20 @@ export class PositioningPage {
     //let selectedPoi = this.pois.find(poi => poi.poiName === unTituloPoi); //ENCUENTRA EL POI Y LO MANDA COMPLETO
     if (searchedPoi) {
       //{ cssClass: 'modal-not-fullscreen-size', poi: this.poi }
-      let modalDetallePoi = this.modalCtrl.create(ModalContentPage, {
+
+      const Page =
+        this.hasGame && this.isFinalMode
+          ? ModalQuestionContentPage
+          : ModalContentPage;
+
+      const question = searchedPoi.question
+        ? searchedPoi.question
+        : this.questions[Math.floor(Math.random() * this.questions.length)];
+
+      let modalDetallePoi = this.modalCtrl.create(Page, {
         workspace: this.currentWorkspace,
         poi: searchedPoi,
+        question: question,
         userLogged: this.userLogged,
       });
       modalDetallePoi.onDidDismiss((value) => {
@@ -2811,18 +2836,59 @@ export class PositioningPage {
           this.startNavigationToPoi(value);
         }
 
-        console.log('value', value);
+        if (
+          this.hasGame &&
+          value &&
+          this.currentWorkspace.configuration.showAnswersDuringGame
+        ) {
+          let isCorrect = false;
 
-        if (this.hasGame && value) {
-          const isCorrect = searchedPoi.answer === value;
+          this.questions = this.questions.filter((q) => q !== question);
+
+          if (question.type === 'Closed') {
+            if (question.correctAnwser.toLowerCase() === value.toLowerCase()) {
+              isCorrect = true;
+            }
+          }
+
+          if (question.type === 'MultipleChoice') {
+            if (Boolean(value)) {
+              isCorrect = true;
+            }
+          }
+
+          if (question.type === 'TrueFalse') {
+            if (Boolean(value) == question.trueFalseAnwser) {
+              isCorrect = true;
+            }
+          }
+
+          const hasPoint = this.currentWorkspace.configuration.showScore;
+          const points = this.currentWorkspace.configuration.points;
+
+          const correctSubTitle =
+            `Tu respuesta es correcta` + hasPoint
+              ? `, has sumado ${points} puntos.`
+              : '.';
+
+          let correctAnswer = '';
+          switch (question) {
+            case 'TrueFalse':
+              correctAnswer = question.correctAnwserText;
+              break;
+            case 'MultipleChoice':
+              correctAnswer = question.options.find((a) => a.correct).text;
+              break;
+            default:
+              correctAnswer = question.correctAnwser;
+              break;
+          }
+
+          const incorrectSubTitle = `Tu respuesta es incorrecta. La respuesta correcta es: "${correctAnswer}".`;
 
           let alert = this.alertCtrl.create({
             title: isCorrect ? 'Felicitaciones' : 'Lo siento',
-            subTitle: isCorrect
-              ? `Tu respuesta es correcta, has sumado ${
-                  environment.points
-                } puntos. ${!value ? searchedPoi.category : ''}.`
-              : `Tu respuesta es incorrecta. La respuesta correcta es: ${searchedPoi.category}`,
+            subTitle: isCorrect ? correctSubTitle : incorrectSubTitle,
             buttons: ['Cerrar'],
           });
 
@@ -2840,6 +2906,17 @@ export class PositioningPage {
               this.stopPositioning(null);
             }
           });
+        }
+
+        if (this.hasGame) {
+          if (
+            this.allPois.length === this.markedPois.length &&
+            !this.isModalOpen
+          ) {
+            this.isModalOpen = true;
+            this.openEndModal();
+            this.stopPositioning(null);
+          }
         }
       });
       modalDetallePoi.present();
@@ -3055,7 +3132,7 @@ export class PositioningPage {
     this.isModalOpen = true;
     let modalEndGame = this.modalCtrl.create(
       EndGameModal,
-      { user: this.userLogged },
+      { user: this.userLogged, workspace: this.currentWorkspace },
       { cssClass: 'select-modal' }
     );
     modalEndGame.present();
@@ -3092,10 +3169,12 @@ export class PositioningPage {
         'Parece que ya has jugado con este usuario.'
       );
     } else {
-      this.alertText(
-        'Intrucciones',
-        '¡Bienvenid@! Este juego te propone responder tres preguntas posicionadas entre la planta baja y el primer piso de la facultad, las cuales están indicadas en los mapas de cada piso.Tene en cuenta que se contabiliza el tiempo transcurrido. Las preguntas se te brindan al leer el código QR correspondiente, para esto el juego debe mostrar el piso en el cual está el código que se desea leer (el cambio de piso lo haces manual usando el menú del juego). Para empezar a jugar debes estar posicionado, para esto usa el icono de inicio de arriba a la derecha.'
-      );
+      if (this.currentWorkspace.configuration.hasIntro) {
+        this.alertText(
+          'Intrucciones',
+          this.currentWorkspace.configuration.introText
+        );
+      }
     }
   }
 
@@ -3134,10 +3213,10 @@ export class PositioningPage {
 
   // * Probando cambiar color de marker
   turnMarkerGreen(poi: Poi) {
-    poi.colour = '#66BB6A';
-    this.poisService
-      .savePoi(this.currentWorkspace.idWorkspace, poi)
-      .then((res) => {});
+    // poi.colour = '#66BB6A';
+    // this.poisService
+    //   .savePoi(this.currentWorkspace.idWorkspace, poi)
+    //   .then((res) => {});
   }
 
   guardarPosicion(marker: Marker, poi: Poi) {
@@ -3182,11 +3261,13 @@ export class PositioningPage {
   };
 
   get isContextualGame() {
-    const { kind } = this.currentWorkspace;
     return (
-      kind &&
-      kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
+      this.hasGame &&
       this.currentWorkspace.configuration.type === 'positionated'
     );
+  }
+
+  get isFreeGame() {
+    return this.hasGame && this.currentWorkspace.configuration.type === 'free';
   }
 }

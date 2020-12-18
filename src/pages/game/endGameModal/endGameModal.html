@@ -1,27 +1,28 @@
-<ion-card scrollY="true" style="margin-top: 36vh; width:90%; margin-left:3vh;">
+<ion-card scrollY="true" style="margin-top: 36vh; width: 90%; margin-left: 3vh">
   <ion-card-title style="text-align: center">Juego Terminado</ion-card-title>
 
   <ion-card-content overflow-scroll="false">
-    <form
-      [formGroup]="form"
-      (ngSubmit)="onSubmit()"
-      style="padding-left:0px; margin-top: -10px;"
-    >
-      <div style="text-align: center;">
+    <form [formGroup]="form" style="padding-left: 0px; margin-top: -10px">
+      <div style="text-align: center">
         <p>
-          Felicitaciones!!! Respondiste las preguntas. Has obtenido
-          <b>{{ points }} puntos</b> en <b>{{ time }} segundos</b>.
+          Felicitaciones!!! Respondiste las preguntas.
+          <span *ngIf="hasScore">
+            Has obtenido
+            <b>{{ points }} puntos</b>
+            <span> en <b>{{ time }} segundos</b></span>
+          </span>
+          .
         </p>
 
         <hr />
-        <div>
-          Para finalizar el juego, vuelve al stand e ingresa el código que te
-          entregarán.
+        <div *ngIf="hasCode">
+          Para finalizar el juego, ingresa el código que te entregarán.
         </div>
 
-        <div class="hr"></div>
+        <div class="hr" *ngIf="hasCode"></div>
 
         <ion-item
+          *ngIf="hasCode"
           [class.ng-invalid]="
             form.get('code').invalid && form.get('code').dirty
           "
@@ -42,14 +43,17 @@
         Cancelar
       </button> -->
         <button
-          style="min-width: 65px; margin-top: 15px;"
+          style="min-width: 65px; margin-top: 15px"
           ion-button
           color="myBlueColour"
           type="submit"
-          [disabled]="!form.valid"
+          (click)="onSubmit()"
+          [disabled]="!isValid"
         >
           <ion-spinner *ngIf="isLoading"></ion-spinner>
-          <p style="color: white" *ngIf="!isLoading">Enviar</p>
+          <p style="color: white" *ngIf="!isLoading">
+            {{hasCode ? 'Enviar' : 'Cerrar'}}
+          </p>
         </button>
       </div>
     </form>

@@ -25,10 +25,10 @@ import { environment } from '../../env/environment';
 import { NuevoQuestionPoiPage } from '../nuevoQuestionPoi/nuevoQuestionPoi';
 
 @Component({
-  selector: 'page-modal',
-  templateUrl: 'modal.html',
+  selector: 'page-modalquestion',
+  templateUrl: 'answerQuestionModal.html',
 })
-export class ModalContentPage {
+export class ModalQuestionContentPage {
   poi: Poi;
   editedPoi: Poi;
   icon;
@@ -51,6 +51,9 @@ export class ModalContentPage {
   ionModal: any;
   modelQRPoi: string;
   loggedUser: any;
+  question: any;
+
+  userText = '';
 
   isFinalUser: boolean;
   constructor(
@@ -73,33 +76,25 @@ export class ModalContentPage {
     this.editedPoi = Object.assign({}, this.poi);
     this.workspace = this.navParams.get('workspace');
     this.userLogged = this.navParams.get('userLogged');
+    this.question = this.navParams.get('question');
 
     this.options = ['Usando WLAN', 'Nuevo QR', 'QR Existente'];
     this.colorString = this.poi.colour.substring(1);
     this.statusString = this.workspace.status.idStatus;
     this.isWorkspaceOwner = this.isOwner();
-    this.showEditAndDelete();
-    this.showSwithPoiVisibility();
-    if (this.workspace.status.idStatus != 'VersionFinalPublica') {
-      if (this.poi.hasQRCode) {
-        this.icon = 'assets/img/' + 'pinPoiQR' + this.colorString + '.png';
-      } else {
-        this.icon = 'assets/img/' + 'pinPoi' + this.colorString + '.png';
-      }
+
+    if (this.poi.hasQRCode) {
+      this.icon =
+        'assets/img/' +
+        'pinPoiQR' +
+        this.workspace.applicationColour.substring(1) +
+        '.png';
     } else {
-      if (this.poi.hasQRCode) {
-        this.icon =
-          'assets/img/' +
-          'pinPoiQR' +
-          this.workspace.applicationColour.substring(1) +
-          '.png';
-      } else {
-        this.icon =
-          'assets/img/' +
-          'pinPoi' +
-          this.workspace.applicationColour.substring(1) +
-          '.png';
-      }
+      this.icon =
+        'assets/img/' +
+        'pinPoi' +
+        this.workspace.applicationColour.substring(1) +
+        '.png';
     }
 
     this.workspaceService.subscribeToWorkspaceStateChangesFromModal(
@@ -117,63 +112,6 @@ export class ModalContentPage {
     this.viewCtrl.dismiss();
   }
 
-  deletePoi() {
-    //STATE PATTERN
-    let modalDeletePoi = this.modalCtrl.create(ModalDeletePOI, {
-      cssClass: 'modal-not-fullscreen-size',
-      poi: this.poi,
-    });
-    modalDeletePoi.onDidDismiss((response) => {
-      if (response) {
-        //BORRARÁ SÓLO SI EL ESTADO LO DEJA
-        this.workspace.status.deletePoi(this, this.isOwner(), this.poi);
-      }
-    });
-    modalDeletePoi.present();
-  }
-
-  deleteFromFirebase(aPoi) {
-    this.poisService.deletePoi(aPoi).then((result) => {
-      if (result) {
-        this.events.publish('disposeMarker', this.poi);
-        this.dismiss();
-      } else {
-        this.alertText(
-          'ERROR',
-          'Se produjo un error al eliminar el PoI. Intente nuevamente.'
-        );
-      }
-    });
-  }
-
-  justOwnerCanDelete() {
-    this.alertText(
-      'No se puede eliminar',
-      'Solo se permite que el propietario del workspace realice modificaciones.'
-    );
-  }
-
-  justOwnerCanEdit() {
-    this.alertText(
-      'No se puede editar',
-      'Solo se permite que el propietario del workspace realice modificaciones.'
-    );
-  }
-
-  cantDelete() {
-    this.alertText(
-      'No se puede eliminar',
-      'El propietario ha cerrado el workspace y no admite modificaciones.'
-    );
-  }
-
-  cantEdit() {
-    this.alertText(
-      'No se puede editar',
-      'El propietario ha cerrado el workspace y no admite modificaciones.'
-    );
-  }
-
   changePoiVisual(visible) {
     this.poisService
       .updatePoiVisibility(this.poi, this.workspace, visible)
@@ -186,6 +124,8 @@ export class ModalContentPage {
         }
       });
   }
+
+  public confirmText() {}
 
   public scanToUseExistingQR() {
     // Optionally request the permission early
@@ -289,114 +229,6 @@ export class ModalContentPage {
     }
   }
 
-  saveChanges() {
-    this.loadingSave = this.createLoading('Guardando cambios...');
-    this.loadingSave.present();
-    this.poisService
-      .updatePoi(this.editedPoi, this.workspace)
-      .then((response) => {
-        if (!response) {
-          this.alertText(
-            'ERROR',
-            'Hubo un error al editar el POI. Intente nuevamente.'
-          );
-          this.hideLoading(this.loadingSave);
-        } else {
-          this.poi.poiName = this.editedPoi.poiName;
-          this.poi.category = this.editedPoi.category;
-          this.poi.answer = this.editedPoi.answer;
-          this.poi.question = this.editedPoi.question;
-          this.poi.asociatedTrigger = this.editedPoi.asociatedTrigger;
-          this.hideLoading(this.loadingSave);
-          this.switchEditionMode();
-        }
-      });
-  }
-
-  public okEncrypt(aBase64, loading) {
-    loading.dismiss();
-    this.editedPoi.base64 = aBase64;
-    this.saveChanges();
-  }
-
-  public notOkEncrypt(loading, err) {
-    loading.dismiss();
-    console.dir(err);
-    this.alertText(
-      'Error',
-      'Se produjo un error al generar el código QR. Intente nuevamente.'
-    );
-  }
-
-  editFromFirebase(editedPoi) {
-    let seModificoElTexto =
-      editedPoi.poiName != this.poi.poiName ||
-      editedPoi.category != this.poi.category;
-    let seModificoLaFormaDeBrindarPoi =
-      this.editedPoi.asociatedTrigger != this.poi.asociatedTrigger;
-
-    let seModificoLaPregunta =
-      this.poi.question != editedPoi.question ||
-      this.poi.answer != editedPoi.answer;
-
-    let loading;
-    if (
-      seModificoElTexto ||
-      seModificoLaFormaDeBrindarPoi ||
-      seModificoLaPregunta
-    ) {
-      //SI NO SE CAMBIO NADA NO MANDO A GUARDAR NADA
-      if (this.editedPoi.hasQRCode) {
-        //SI TIENE QR TENGO QUE ENCRIPTARLO Y LUEGO CUARDA EN EL OK
-        loading = this.createLoading('Encriptando código QR');
-        loading.present();
-        this.poisService
-          .encriptQR(this.editedPoi, this, loading)
-          .then((result) => {});
-      } else {
-        //SI NO TIENE QR GUARDO DIRECTAMENTE
-        this.saveChanges();
-      }
-    } else {
-      this.switchEditionMode();
-    }
-  }
-
-  saveEditedPoi(editedPoi) {
-    this.workspace.status.editPoi(this, this.isOwner(), editedPoi);
-  }
-
-  switchEditionMode() {
-    if (this.poi.question && !this.editionMode) {
-      let nuevoPoiModal = this.modalCtrl.create(NuevoQuestionPoiPage, {
-        nuevoPoi: this.poi,
-        workspace: this.workspace,
-        loggedUser: this.userLogged,
-        isEdit: true,
-      });
-      nuevoPoiModal.onDidDismiss((poiResultado) => {
-        if (poiResultado != undefined) {
-          this.editedPoi = poiResultado;
-          this.saveChanges();
-        }
-      });
-      try {
-        this.navCtrl.pop();
-      } catch (error) {}
-      nuevoPoiModal.present();
-    } else {
-      this.zone.run(() => {
-        //run the code that should update the view
-        if (this.editionMode) {
-          this.editionMode = false;
-        } else {
-          this.editedPoi = Object.assign({}, this.poi);
-          this.editionMode = true;
-        }
-      });
-    }
-  }
-
   alertText(aTitle, aSubTitle) {
     let alert = this.alertCtrl.create({
       title: aTitle,
@@ -467,12 +299,14 @@ export class ModalContentPage {
   // GAME
 
   sendAnswer(value: string) {
-    console.log('sending', value);
-    // this.gameService.answerQuestion(this.poi, value);
-    console.log('poi', this.poi);
-    console.log('editedPoi', this.editedPoi);
-    console.log('response', value);
-    this.viewCtrl.dismiss(value);
+    if (this.question.type === 'Closed') {
+      this.gameService.answerQuestion(this.poi, this.question, this.userText);
+    } else {
+      this.gameService.answerQuestion(this.poi, this.question, value);
+    }
+
+    this.userText = '';
+    this.viewCtrl.dismiss(String(value));
   }
 
   get hasQuestions(): boolean {

@@ -298,7 +298,7 @@ export class AddQuestion {
     if (!this.newQuestion.question) return false;
 
     if (this.newQuestion.type === 'TrueFalse') {
-      return false;
+      return true;
     }
 
     if (this.newQuestion.type === 'MultipleChoice') {

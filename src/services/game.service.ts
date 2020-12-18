@@ -64,7 +64,7 @@ export class GameService {
   }
 
   public saveScore(user: User) {
-    const { time, score } = this;
+    const { time = 0, score = 0 } = this;
 
     return new Promise<boolean>((resPromesa) => {
       this.angularfirebaseDB.database
@@ -149,19 +149,10 @@ export class GameService {
     return this.markedPoi.asObservable().pipe(takeUntil(this.unsubscribe));
   }
 
-  answerQuestion = (poi: Poi, response: string): void => {
+  answerQuestion = (poi: Poi, question: any, response: string): void => {
     console.log('savePOI', poi, response);
 
     let currentPois = this.markedPoi.getValue();
-
-    // if (currentPois.find(c => c.poi.identifier == poi.identifier)) {
-    //   return;
-    // }
-
-    // currentPois = uniqBy([...currentPois], e => {
-    //   e.poi.identifier;
-    // });
-    // Mark poi as responded
 
     console.log('all current', currentPois);
 
@@ -174,8 +165,22 @@ export class GameService {
     this.markedPoi.next([...currentPois, { poi, response }]);
 
     // Increase points if response is correct
-    if (response == poi.answer) {
-      this.increaseScore();
+    if (question.type === 'Closed') {
+      if (question.correctAnwser.toLowerCase() === response.toLowerCase()) {
+        this.increaseScore();
+      }
+    }
+
+    if (question.type === 'MultipleChoice') {
+      if (response) {
+        this.increaseScore();
+      }
+    }
+
+    if (question.type === 'TrueFalse') {
+      if (response == question.trueFalseAnwser) {
+        this.increaseScore();
+      }
     }
 
     // Have completed all pois

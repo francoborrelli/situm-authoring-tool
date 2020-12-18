@@ -64,6 +64,7 @@ import { RankingModal } from '../pages/game/rankingModal/rankingModal';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { NuevoQuestionPoiPage } from '../pages/nuevoQuestionPoi/nuevoQuestionPoi';
+import { ModalQuestionContentPage } from '../pages/answerQuestionModal/answerQuestionModal';
 
 const { firebaseConfig } = environment;
 
@@ -74,6 +75,7 @@ const { firebaseConfig } = environment;
     NavbarComponent,
     MapButtonComponent,
     ModalContentPage,
+    ModalQuestionContentPage,
     NuevoPoiPage,
     NuevoQuestionPoiPage,
     QuestionsInformationModal,
@@ -107,6 +109,7 @@ const { firebaseConfig } = environment;
     MyApp,
     PositioningPage,
     ModalContentPage,
+    ModalQuestionContentPage,
     NuevoPoiPage,
     NuevoQuestionPoiPage,
     QuestionsInformationModal,
