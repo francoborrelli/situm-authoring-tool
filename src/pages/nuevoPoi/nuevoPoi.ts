@@ -249,9 +249,16 @@ export class NuevoPoiPage {
     this.ionModal.style.opacity = '1';
   }
 
-  private acceptAddPoi() {
+  public acceptAddPoi() {
     this.modelQRPoi = this.nuevoPoi.poiName;
     let loading;
+
+    if (this.isFreeGame) {
+      this.nuevoPoi.poiName = 'Lugar';
+    }
+
+    console.log(this.nuevoPoi);
+
     this.nuevoPoi.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
     if (this.nuevoPoi.hasQRCode) {
       loading = this.createLoading('Encriptando QR');
@@ -280,7 +287,7 @@ export class NuevoPoiPage {
     }
   }
 
-  private tomarFoto() {
+  public tomarFoto() {
     const options: CameraOptions = {
       quality: 60,
       destinationType: this.camera.DestinationType.DATA_URL,
@@ -293,6 +300,7 @@ export class NuevoPoiPage {
       (imageData) => {
         // imageData is either a base64 encoded string or a file URI
         // If it's base64:
+        console.log(imageData);
         this.nuevoPoi.infoHtml = 'data:image/jpeg;base64,' + imageData;
       },
       (err) => {

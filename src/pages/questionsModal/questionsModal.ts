@@ -101,6 +101,10 @@ export class QuestionsInformationModal {
     alert.present();
   }
 
+  get amount() {
+    return (this.questions || []).length ? `(${this.questions.length})` : '';
+  }
+
   ionViewDidEnter() {
     this.timer = setTimeout(() => this.dismiss(), 10000);
   }

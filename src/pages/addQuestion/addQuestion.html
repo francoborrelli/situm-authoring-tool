@@ -13,7 +13,7 @@
     </ion-item>
 
     <ion-item style="padding-left: 0px">
-      <ion-label style="color: #1576c9; font-size: 12px"
+      <ion-label style="color: #1576c9; font-size: 16px"
         >Tipo de Pregunta</ion-label
       >
       <ion-select
@@ -25,7 +25,7 @@
       >
         <ion-option value="TrueFalse"><p>Verdadero/Falso</p></ion-option>
         <ion-option value="MultipleChoice">Multiple Choice</ion-option>
-        <ion-option value="Closed">Pregunta Cerrada</ion-option>
+        <ion-option value="Closed">Ingreso de Respuesta</ion-option>
       </ion-select>
     </ion-item>
 
@@ -40,8 +40,9 @@
         <button
           item-end
           ion-button
+          round
           color="success"
-          [disabled]="control.correct"
+          [outline]="!control.correct"
           (click)="correctControl(control)"
         >
           <ion-icon ios="ios-checkmark" md="md-checkmark"></ion-icon>
@@ -50,6 +51,7 @@
           *ngIf="newQuestion.options.length > 2"
           ion-button
           item-end
+          round
           (click)="removeControl(control)"
           color="danger"
         >
@@ -58,7 +60,7 @@
       </ion-item>
 
       <div style="text-align: center" *ngIf="newQuestion.options.length < 4">
-        <button ion-button color="myBlueColour" (click)="addControl()">
+        <button round ion-button color="light" (click)="addControl()">
           Agregar otra opción
         </button>
       </div>
@@ -76,7 +78,7 @@
           margin-top: -19px;
           border-top: none;
           color: #1576c9;
-          font-size: 12px;
+          font-size: 16px;
         "
       >
         Respuesta:
@@ -96,7 +98,12 @@
         style="padding-left: 0px"
         *ngIf="newQuestion.type === 'TrueFalse'"
       >
-        <ion-label color="myBlueColour" stacked>Respuesta Correcta:</ion-label>
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
+          >Respuesta Correcta:</ion-label
+        >
         <ion-textarea
           type="text"
           min="5"
@@ -109,7 +116,12 @@
     </ion-list>
 
     <ion-item style="padding-left: 0px" *ngIf="newQuestion.type === 'Closed'">
-      <ion-label color="myBlueColour" stacked>Respuesta Esperada:</ion-label>
+      <ion-label
+        style="color: #1576c9; font-size: 16px"
+        color="myBlueColour"
+        stacked
+        >Respuesta Esperada:</ion-label
+      >
       <ion-textarea
         type="text"
         min="5"

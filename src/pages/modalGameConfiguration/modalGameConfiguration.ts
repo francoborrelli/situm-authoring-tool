@@ -37,6 +37,8 @@ export class ModalGameConfiguration {
   initial: boolean;
   isFinalMode: boolean;
 
+  public unregisterBackButtonAction: any; //Boton hacia atrás
+
   constructor(
     public platform: Platform,
     public params: NavParams,
@@ -58,9 +60,17 @@ export class ModalGameConfiguration {
       this
     );
 
+    if (this.initial)
+      this.unregisterBackButtonAction = this.platform.registerBackButtonAction(
+        () => {}
+      );
+
     this.keyword = this.keyboard;
   }
-  public unregisterBackButtonAction: any; //Boton hacia atrás
+
+  ngOnDestroy(): void {
+    if (this.initial) this.unregisterBackButtonAction();
+  }
 
   dismissWithoutSave() {
     //CIERRO SIN GUARDAR

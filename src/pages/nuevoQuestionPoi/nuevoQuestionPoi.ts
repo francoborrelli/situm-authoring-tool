@@ -287,9 +287,14 @@ export class NuevoQuestionPoiPage {
 
   public acceptAddPoi() {
     this.nuevoPoi.question = this.newQuestion;
+
     this.modelQRPoi = this.nuevoPoi.poiName;
+    this.nuevoPoi.poiName = this.questionType;
+
     let loading;
+
     this.nuevoPoi.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
+
     if (this.nuevoPoi.hasQRCode) {
       loading = this.createLoading('Encriptando QR');
       loading.present();
@@ -343,6 +348,7 @@ export class NuevoQuestionPoiPage {
     return (
       kind &&
       kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
+      this.workspace.configuration &&
       this.workspace.configuration.type === 'positionated'
     );
   }
@@ -352,8 +358,22 @@ export class NuevoQuestionPoiPage {
     return (
       kind &&
       kind.idKind === 'CrearLugaresRelevantesConPreguntas' &&
+      this.workspace.configuration &&
       this.workspace.configuration.type === 'free'
     );
+  }
+
+  get questionType() {
+    switch (this.newQuestion.type) {
+      case 'TrueFalse':
+        return 'Pregunta Verdadero/Falso';
+      case 'MultipleChoice':
+        return 'Pregunta Multiple Choice';
+      case 'Closed':
+        return 'Pregunta Ingreso de Respuesta';
+      default:
+        return '';
+    }
   }
 
   get completeQuestion() {

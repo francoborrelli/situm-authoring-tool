@@ -441,6 +441,15 @@ export class PositioningPage {
       }
       this.currentWorkspace = aWorkspace;
 
+      if (this.isFreeGame) {
+        this.questionService
+          .getAllQuestions(this.currentWorkspace.idWorkspace)
+          .subscribe((q) => {
+            console.log(q);
+            this.questions = q;
+          });
+      }
+
       if (this.hasGame && this.isPublicVersion) {
         console.log('user', this.userLogged);
         console.log('workspace', this.currentWorkspace);
@@ -873,7 +882,7 @@ export class PositioningPage {
               'Ya ha ingresado una respuesta para esta pregunta.'
             );
           } else {
-            this.abrirPoi(poiFound.poiName);
+            this.abrirPoi(poiFound.identifier);
           }
         }
       }
@@ -1614,7 +1623,7 @@ export class PositioningPage {
         item.response === aPoi.answer ? this.successColor : this.errorColor;
     }
 
-    const title = this.hasGame ? 'Pregunta' : aPoi.poiName;
+    const title = aPoi.poiName;
 
     this.mapService
       .drawMarkerInMap(
@@ -1689,11 +1698,14 @@ export class PositioningPage {
               (r) => r.poi.identifier === poi.identifier
             );
 
+            console.log(this.markedPois);
+
             if (item) {
-              color =
-                item.response === poi.answer
-                  ? this.successColor
-                  : this.errorColor;
+              if (this.currentWorkspace.configuration.showAnswersDuringGame) {
+                color = item.response ? '#66BB6A' : '#F44336';
+              } else {
+                color = '#9E9E9E';
+              }
             }
 
             const title = this.hasGame ? 'Pregunta' : poi.poiName;
@@ -2066,7 +2078,28 @@ export class PositioningPage {
     }
   }
 
-  changeWorkspaceStatus(newStatusString) {
+  async changeWorkspaceStatus(newStatusString) {
+    if (this.isFreeGame) {
+      console.log(this.questions.length);
+      console.log(this.allPois.length);
+
+      if (this.questions.length < this.allPois.length) {
+        let alert = this.alertCtrl.create({
+          title: 'No puedes cambiar de estado',
+          subTitle: 'Debe haber al menos una pregunta para cada lugar creado',
+          buttons: [
+            {
+              text: 'Cerrar',
+              role: 'cancel',
+              handler: () => {},
+            },
+          ],
+        });
+        alert.present();
+        return false;
+      }
+    }
+
     //CUANDO CAMBIA EL USUARIO OWNER A MANO, LUEGO DE CAMBIARLO AVISA CUAL ES EL NUEVO ESTADO
     //this.lastKnownStatus = this.getSelectedWorkspaceStatus(this.currentWorkspace.status.idStatus);
     let newStatus = this.getSelectedWorkspaceStatus(newStatusString);
@@ -2510,6 +2543,7 @@ export class PositioningPage {
                 if (this.isFreeGame)
                   this.questionService
                     .getAllQuestions(this.currentWorkspace.idWorkspace)
+                    .pipe(take(1))
                     .subscribe((q) => {
                       this.questions = q;
                       if (!this.currentWorkspace.configuration.rotate) {
@@ -2801,11 +2835,11 @@ export class PositioningPage {
   }
 
   /*ver datos poi*/
-  public abrirPoi(unTituloPoi: string) {
+  public abrirPoi(identifier: string) {
     let searchedPoi;
     this.pois.some((poisByCreator) => {
       let found;
-      found = poisByCreator.find((poi) => poi.poiName === unTituloPoi);
+      found = poisByCreator.find((poi) => poi.identifier === identifier);
       if (found != undefined) {
         searchedPoi = found;
         return true;
@@ -2822,7 +2856,16 @@ export class PositioningPage {
 
       const question = searchedPoi.question
         ? searchedPoi.question
-        : this.questions[Math.floor(Math.random() * this.questions.length)];
+        : this.questions
+        ? this.questions[Math.floor(Math.random() * this.questions.length)]
+        : null;
+
+      console.log({
+        workspace: this.currentWorkspace,
+        poi: searchedPoi,
+        question: question,
+        userLogged: this.userLogged,
+      });
 
       let modalDetallePoi = this.modalCtrl.create(Page, {
         workspace: this.currentWorkspace,
@@ -2843,7 +2886,9 @@ export class PositioningPage {
         ) {
           let isCorrect = false;
 
-          this.questions = this.questions.filter((q) => q !== question);
+          this.questions = (this.questions || []).filter(
+            (q) => q.id !== question.id
+          );
 
           if (question.type === 'Closed') {
             if (question.correctAnwser.toLowerCase() === value.toLowerCase()) {
@@ -2858,29 +2903,29 @@ export class PositioningPage {
           }
 
           if (question.type === 'TrueFalse') {
-            if (Boolean(value) == question.trueFalseAnwser) {
+            if (Boolean(value) == Boolean(question.trueFalseAnwser)) {
               isCorrect = true;
             }
           }
 
           const hasPoint = this.currentWorkspace.configuration.showScore;
-          const points = this.currentWorkspace.configuration.points;
+          const points = this.currentWorkspace.configuration.score;
 
-          const correctSubTitle =
-            `Tu respuesta es correcta` + hasPoint
-              ? `, has sumado ${points} puntos.`
-              : '.';
+          const correctSubTitle = `Tu respuesta es correcta${
+            hasPoint ? `, has sumado ${points} puntos.` : '.'
+          }`;
 
           let correctAnswer = '';
           switch (question) {
             case 'TrueFalse':
-              correctAnswer = question.correctAnwserText;
+              correctAnswer = question.correctAnwserText || '';
               break;
             case 'MultipleChoice':
-              correctAnswer = question.options.find((a) => a.correct).text;
+              correctAnswer =
+                question.options.find((a) => a.correct).text || '';
               break;
             default:
-              correctAnswer = question.correctAnwser;
+              correctAnswer = question.correctAnwser || '';
               break;
           }
 
@@ -2941,7 +2986,7 @@ export class PositioningPage {
 
   public abrirPoiDirectamente(aPoi) {
     /* NO SE DELEGA EN NINGUNA ESTRATEGIA */
-    this.abrirPoi(aPoi.poiName);
+    this.abrirPoi(aPoi.identifier);
   }
 
   public abrirPoiSegunEstrategia(aPoi) {
@@ -3263,11 +3308,24 @@ export class PositioningPage {
   get isContextualGame() {
     return (
       this.hasGame &&
+      this.currentWorkspace.configuration &&
       this.currentWorkspace.configuration.type === 'positionated'
     );
   }
 
   get isFreeGame() {
-    return this.hasGame && this.currentWorkspace.configuration.type === 'free';
+    return (
+      this.hasGame &&
+      this.currentWorkspace.configuration &&
+      this.currentWorkspace.configuration.type === 'free'
+    );
+  }
+
+  get isFree() {
+    return (
+      this.hasGame &&
+      this.currentWorkspace.configuration &&
+      this.currentWorkspace.configuration.type === 'free'
+    );
   }
 }

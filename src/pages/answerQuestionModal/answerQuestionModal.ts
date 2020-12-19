@@ -1,4 +1,4 @@
-import { Component, ViewChild, NgZone } from '@angular/core';
+import { Component, ViewChild, NgZone, ChangeDetectorRef } from '@angular/core';
 import {
   Platform,
   NavParams,
@@ -54,6 +54,9 @@ export class ModalQuestionContentPage {
   question: any;
 
   userText = '';
+  clicked = false;
+
+  answer: '';
 
   isFinalUser: boolean;
   constructor(
@@ -69,7 +72,8 @@ export class ModalQuestionContentPage {
     public events: Events,
     private navCtrl: NavController,
     public loadingCtrl: LoadingController,
-    private gameService: GameService
+    private gameService: GameService,
+    private cd: ChangeDetectorRef
   ) {
     this.editionMode = false;
     this.poi = this.navParams.get('poi');
@@ -298,15 +302,22 @@ export class ModalQuestionContentPage {
 
   // GAME
 
-  sendAnswer(value: string) {
+  saveAnswer(answer: any, text) {
+    this.answer = answer;
+    this.clicked = text || true;
+    this.cd.detectChanges();
+  }
+
+  sendAnswer() {
     if (this.question.type === 'Closed') {
       this.gameService.answerQuestion(this.poi, this.question, this.userText);
+      this.viewCtrl.dismiss(this.userText);
+      this.userText = '';
     } else {
-      this.gameService.answerQuestion(this.poi, this.question, value);
+      this.userText = '';
+      this.gameService.answerQuestion(this.poi, this.question, this.answer);
+      this.viewCtrl.dismiss(String(this.answer));
     }
-
-    this.userText = '';
-    this.viewCtrl.dismiss(String(value));
   }
 
   get hasQuestions(): boolean {

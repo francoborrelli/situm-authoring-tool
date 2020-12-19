@@ -63,6 +63,7 @@ export class AddQuestion {
       this.newQuestion = this.navParams.get('question');
     } else {
       this.newQuestion = {
+        id: new Date().getTime(),
         ...this.navParams.get('question'),
         options: [
           { name: '', correct: '' },

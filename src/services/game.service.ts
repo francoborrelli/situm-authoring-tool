@@ -149,8 +149,39 @@ export class GameService {
     return this.markedPoi.asObservable().pipe(takeUntil(this.unsubscribe));
   }
 
-  answerQuestion = (poi: Poi, question: any, response: string): void => {
+  answerQuestion = (poi: Poi, question: any, response: any): void => {
     console.log('savePOI', poi, response);
+
+    let correct = false;
+
+    // Increase points if response is correct
+    if (question.type === 'Closed') {
+      console.log('closed', poi, response);
+      if (question.correctAnwser.toLowerCase() === response.toLowerCase()) {
+        this.increaseScore();
+        correct = true;
+      }
+    }
+
+    if (question.type === 'MultipleChoice') {
+      console.log(response);
+      if (response) {
+        this.increaseScore();
+        correct = true;
+      }
+    }
+
+    if (question.type === 'TrueFalse') {
+      console.log(response == Boolean(question.trueFalseAnwser));
+      console.log(response);
+      console.log(Boolean(question.trueFalseAnwser));
+      console.log(question);
+
+      if (response === Boolean(question.trueFalseAnwser)) {
+        this.increaseScore();
+        correct = true;
+      }
+    }
 
     let currentPois = this.markedPoi.getValue();
 
@@ -158,30 +189,11 @@ export class GameService {
 
     this.storage.set(this.storeId, {
       startDate: this.startDate,
-      pois: [...currentPois, { poi, response }],
+      pois: [...currentPois, { poi, response: correct, question }],
     });
 
-    console.log('next', [...currentPois, { poi, response }]);
-    this.markedPoi.next([...currentPois, { poi, response }]);
-
-    // Increase points if response is correct
-    if (question.type === 'Closed') {
-      if (question.correctAnwser.toLowerCase() === response.toLowerCase()) {
-        this.increaseScore();
-      }
-    }
-
-    if (question.type === 'MultipleChoice') {
-      if (response) {
-        this.increaseScore();
-      }
-    }
-
-    if (question.type === 'TrueFalse') {
-      if (response == question.trueFalseAnwser) {
-        this.increaseScore();
-      }
-    }
+    console.log('next', [...currentPois, { poi, response: correct, question }]);
+    this.markedPoi.next([...currentPois, { poi, response: correct, question }]);
 
     // Have completed all pois
     // if (currentPois.length === this.totalPoi) {
@@ -190,6 +202,8 @@ export class GameService {
   };
 
   increaseScore(): void {
+    console.log(this.workspace.configuration.score);
+
     this.score += Number(this.workspace.configuration.score) || 0;
   }
 

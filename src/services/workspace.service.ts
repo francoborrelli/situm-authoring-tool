@@ -244,7 +244,7 @@ export class MostrarInformacionSiempreQueEstePosicionadoEnElEdificio
     super('MostrarInformacionSiempreQueEstePosicionadoEnElEdificio');
   }
   public verDatosPoi(aPoi, paginaInvocante) {
-    paginaInvocante.abrirPoi(aPoi.poiName);
+    paginaInvocante.abrirPoi(aPoi.identifier);
   }
 }
 
@@ -260,7 +260,7 @@ export class MostrarInformacionPorEscaneo extends StrategyToShowInformation {
     super('MostrarInformacionPorEscaneo');
   }
   public verDatosPoi(aPoi, paginaInvocante) {
-    paginaInvocante.noAbrirPoi(aPoi.poiName);
+    paginaInvocante.noAbrirPoi(aPoi.identifier);
   }
 }
 

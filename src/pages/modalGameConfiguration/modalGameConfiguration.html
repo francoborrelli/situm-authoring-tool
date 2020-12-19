@@ -9,8 +9,8 @@
   <ion-card-content>
     <ion-scroll scrollY="true" style="min-height: 65vh">
       <ion-item style="padding-left: 0px">
-        <ion-label style="color: #1576c9; font-size: 12px"
-          >Tipo de Preguntas</ion-label
+        <ion-label style="color: #1576c9; font-size: 16px"
+          >Tipo de Asociación</ion-label
         >
         <ion-select
           [disabled]="!initial"
@@ -22,13 +22,13 @@
         >
           <ion-option value="positionated"
             ><p>
-              Contextuales - Las preguntas se crearán al crear un lugar
-              relevante.
+              Estática - Las preguntas se crean en lugares del espacio físico.
             </p></ion-option
           >
           <ion-option value="free">
-            Libres - Las preguntas se asociarán a lugares relevantes
-            dinámicamente.
+            Dinámico con Asignación Aleatoria – Se crean las preguntas y los
+            lugares dónde brindar preguntas por separado, y se realiza la
+            asociación de manera aleatoria.
           </ion-option>
         </ion-select>
       </ion-item>
@@ -37,21 +37,25 @@
         style="color: #696868; font-style: italic"
         *ngIf="configuration && configuration.type === 'positionated'"
       >
-        Las preguntas se crearán al crear un lugar relevante.
+        Las preguntas se crean en lugares del espacio físico.
       </p>
 
       <p
         style="color: #696868; font-style: italic"
         *ngIf="configuration && configuration?.type === 'free'"
       >
-        Las preguntas se asociarán a lugares relevantes dinámicamente.
+        Se crean las preguntas y los lugares dónde brindar preguntas por
+        separado, y se realiza la asociación de manera aleatoria.
       </p>
 
       <ion-item
         style="padding-left: 0px"
         *ngIf="configuration && configuration.type === 'free'"
       >
-        <ion-label color="myBlueColour" stacked
+        <ion-label
+          color="myBlueColour"
+          style="color: #1576c9; font-size: 16px"
+          stacked
           >Rotar preguntas durante el juego</ion-label
         >
         <ion-toggle
@@ -63,85 +67,10 @@
       <div style="width: 100%; border-bottom: 1px solid #e6d8d8"></div>
 
       <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked>Registrar tiempo</ion-label>
-        <ion-toggle
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.time"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked>Registrar Puntaje</ion-label>
-        <ion-toggle
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.showScore"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-item
-        style="padding-left: 0px"
-        *ngIf="configuration && configuration.showScore"
-      >
-        <ion-label color="myBlueColour" stacked>Puntos por Pregunta:</ion-label>
-        <ion-input
-          min="1"
-          max="20"
-          type="number"
-          placeholder="Puntaje"
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.score"
-          >{{ configuration.score }}</ion-input
-        >
-      </ion-item>
-
-      <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked
-          >Mostrar respuestas durante el juego</ion-label
-        >
-        <ion-toggle
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.showAnswersDuringGame"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked>Mostrar Ranking</ion-label>
-        <ion-toggle
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.ranking"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked
-          >Incluir Código de Finalización</ion-label
-        >
-        <ion-toggle
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.showCode"
-        ></ion-toggle>
-      </ion-item>
-
-      <ion-item
-        style="padding-left: 0px"
-        *ngIf="configuration && configuration.showCode"
-      >
-        <ion-label color="myBlueColour" stacked
-          >Código de Finalización:</ion-label
-        >
-        <ion-input
-          min="1"
-          max="20"
-          type="text"
-          [disabled]="isFinalMode"
-          [(ngModel)]="configuration.code"
-          placeholder="Código de Finalización"
-          >{{ configuration.code }}</ion-input
-        >
-      </ion-item>
-
-      <ion-item style="padding-left: 0px">
-        <ion-label color="myBlueColour" stacked
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
           >Incluir introducción al juego</ion-label
         >
         <ion-toggle
@@ -154,7 +83,10 @@
         style="padding-left: 0px"
         *ngIf="configuration && configuration.hasIntro"
       >
-        <ion-label color="myBlueColour" stacked
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
           >Texto de introducción:</ion-label
         >
         <ion-input
@@ -165,6 +97,113 @@
           [(ngModel)]="configuration.introText"
           placeholder="Texto de introducción"
           >{{ configuration.introText }}</ion-input
+        >
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label
+          color="myBlueColour"
+          style="color: #1576c9; font-size: 16px"
+          stacked
+          >Registrar tiempo</ion-label
+        >
+        <ion-toggle
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.time"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label
+          color="myBlueColour"
+          style="color: #1576c9; font-size: 16px"
+          stacked
+          >Registrar Puntaje</ion-label
+        >
+        <ion-toggle
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.showScore"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item
+        style="padding-left: 0px"
+        *ngIf="configuration && configuration.showScore"
+      >
+        <ion-label
+          color="myBlueColour"
+          style="color: #1576c9; font-size: 16px"
+          stacked
+          >Puntos por Pregunta:</ion-label
+        >
+        <ion-input
+          min="1"
+          max="20"
+          type="number"
+          placeholder="Puntaje"
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.score"
+          >{{ configuration.score }}</ion-input
+        >
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
+          >Mostrar Ranking</ion-label
+        >
+        <ion-toggle
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.ranking"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label
+          color="myBlueColour"
+          stacked
+          style="color: #1576c9; font-size: 16px"
+          >Mostrar resultado al responder</ion-label
+        >
+        <ion-toggle
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.showAnswersDuringGame"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item style="padding-left: 0px">
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
+          >Incluir Código de Finalización</ion-label
+        >
+        <ion-toggle
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.showCode"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item
+        style="padding-left: 0px"
+        *ngIf="configuration && configuration.showCode"
+      >
+        <ion-label
+          style="color: #1576c9; font-size: 16px"
+          color="myBlueColour"
+          stacked
+          >Código de Finalización:</ion-label
+        >
+        <ion-input
+          min="1"
+          max="20"
+          type="text"
+          [disabled]="isFinalMode"
+          [(ngModel)]="configuration.code"
+          placeholder="Código de Finalización"
+          >{{ configuration.code }}</ion-input
         >
       </ion-item>
 
