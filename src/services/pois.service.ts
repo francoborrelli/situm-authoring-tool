@@ -58,6 +58,9 @@ export class Poi {
   asociatedTrigger: string;
   visible: boolean;
   options: any;
+    getAllPois(idWorkspace: number) {
+      throw new Error('Method not implemented.');
+    }
 }
 
 @Injectable()

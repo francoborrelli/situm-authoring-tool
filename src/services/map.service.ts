@@ -67,9 +67,15 @@ export class MapService {
     let colourWithoutHash = hexColour.substring(1); //QUITO EL HASH
 
     if (hasQRCode) {
-      markerIcon.url = 'assets/img/pinPoiQR' + colourWithoutHash + '.png';
+      markerIcon.url =
+        'file:///android_asset/www/assets/img/pinPoiQR' +
+        colourWithoutHash +
+        '.png';
     } else {
-      markerIcon.url = 'assets/img/pinPoi' + colourWithoutHash + '.png';
+      markerIcon.url =
+        'file:///android_asset/www/assets/img/pinPoi' +
+        colourWithoutHash +
+        '.png';
     }
     //markerIcon.url = "assets/img/pinPoiE040FB.png"
     /*let icon = { //CUANDO SE HABILITE LA OPCION DE SVG EN IONIC

@@ -26,7 +26,7 @@ export abstract class SensingMechanism {
   constructor(idPositioning) {
     this.idPositioning = idPositioning;
   }
-  abstract startPositioning(page);
+  abstract startPositioning(page, onOk);
   abstract stopPositioning(page);
   abstract getCartesianCoordinate(page): { x: string; y: string };
   abstract getCoordinate(page): { latitude: string; longitude: string };
@@ -39,7 +39,10 @@ export class Fixed extends SensingMechanism {
   constructor() {
     super('Fixed');
   }
-  public startPositioning(page) {
+  public startPositioning(page, onOk = () => {}) {
+    console.log('FIXEDDDDD');
+    console.log(page);
+
     page.positioning = true;
     page.enableMapDrag = true;
     page.map.on(GoogleMapsEvent.MAP_DRAG).subscribe((data) => {
@@ -48,11 +51,13 @@ export class Fixed extends SensingMechanism {
         let iconPosition: MarkerIcon = {
           size: { height: 44, width: 44 },
         };
-        iconPosition.url = 'assets/img/finalFootPrint.png';
+        iconPosition.url =
+          'file:///android_asset/www/assets/img/finalFootPrint.png';
         page.marker.setIcon(iconPosition);
         page.marker.setPosition(position);
       }
     });
+    onOk();
   }
   public stopPositioning(page) {
     page.enableMapDrag = false;
@@ -121,7 +126,10 @@ export class Situm extends SensingMechanism {
     return locationOptions;
   }
 
-  public startPositioning(page) {
+  public startPositioning(page, onOk = () => {}) {
+    console.log('sitummmm');
+    console.log(page);
+
     const locationOptions = this.mountLocationOptions(page.building);
     cordova.plugins.Situm.startPositioning(
       locationOptions,
@@ -136,11 +144,13 @@ export class Situm extends SensingMechanism {
         let iconPosition: MarkerIcon = {
           size: { height: 44, width: 44 },
         };
-        iconPosition.url = 'assets/img/finalFootPrint.png';
+        iconPosition.url =
+          'file:///android_asset/www/assets/img/finalFootPrint.png';
         page.marker.setIcon(iconPosition);
         page.marker.setPosition(position);
         page.detector.detectChanges();
         //this.mostrarPosicionActual(res);
+        onOk();
       },
       (err: any) => {
         const reason = err.match('reason=(.*),');

@@ -1771,9 +1771,9 @@ export class PositioningPage {
               marker.on(GoogleMapsEvent.MARKER_DRAG_END).subscribe(() => {
                 this.guardarPosicion(marker, poi);
               });
-              marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-                this.turnMarkerGreen(poi);
-              });
+              // marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+              //   this.turnMarkerGreen(poi);
+              // });
               marker.on(GoogleMapsEvent.INFO_CLICK).subscribe(() => {
                 this.verDatosPoi(poi);
                 // if(!poi.hasQRCode){/*SE DELEGA A DISTINTO TIPO DE ESTRATEGIA, POR ESO SE PREGUNTA SI TIENE O NO QR*/
@@ -2373,100 +2373,53 @@ export class PositioningPage {
           console.log('ESTADO: ', state);
           /*VOY A REPETIR CODIGO PERO NO DEBERIA*/
           if (state != 'location_off') {
-            let loadingIndoorPositioning;
-            // let timer;
-            // this.timerTenSecondsExecuted = false;
-            // this.errorGPSDisabedExecuted = false;
-            this.permissionsService
-              .checkLocationPermissions()
-              .then((permission) => {
-                console.log('Location permission?', permission);
-
-                if (permission) {
-                  if (this.positioning == true) {
-                    const message = 'Position listener is already enabled.';
-                    this.presentToast(message, 'bottom', null);
-                    return;
-                  }
-                  if (!this.map) {
-                    const message =
-                      'The map must be visible in order to launch the positioning';
-                    this.presentToast(message, 'bottom', null);
-                    return;
-                  }
-
-                  loadingIndoorPositioning = this.createLoading(
-                    'Cargando posición indoor...'
-                  );
-                  loadingIndoorPositioning.present();
-                  this.createPositionMarker();
-                  const locationOptions = this.mountLocationOptions();
-                  // Set callback and starts listen onLocationChanged event
-                  // More details in http://developers.situm.es/sdk_documentation/cordova/jsdoc/1.3.10/symbols/Situm.html#.startPositioning
-                  //timer = setTimeout(() => this.resetPositioning(loadingIndoorPositioning), 10000);
-
-                  cordova.plugins.Situm.startPositioning(
-                    locationOptions,
-                    (res: any) => {
-                      //
-                      this.positioning = true;
-                      this.currentPosition = res;
-                      console.log('LA POSICION ES:');
-                      console.log(res);
-                      if (
-                        !this.currentPosition ||
-                        !this.currentPosition.coordinate
-                      )
-                        return;
-                      let position = this.mountPositionCoords(
-                        this.currentPosition
-                      );
-
-                      // Update the navigation
-                      if (this.navigating)
-                        this.updateNavigation(this.currentPosition);
-
-                      let iconPosition: MarkerIcon = {
-                        size: { height: 60, width: 60 },
-                      };
-                      iconPosition.url = 'assets/img/finalFootPrint.png';
-
-                      this.marker.setIcon(iconPosition);
-                      this.marker.setPosition(position);
-                      this.hideLoading(loadingIndoorPositioning);
-                      this.detector.detectChanges();
-                      //this.mostrarPosicionActual(res);
-                    },
-                    (err: any) => {
-                      const reason = err.match('reason=(.*),');
-                      let errorMessage = reason ? reason[1] : err;
-                      this.stopPositioning(loadingIndoorPositioning);
-                      /*if (this.timerTenSecondsExecuted == false) {*/
-                      //this.alertText("No se pudo posicionar.", "Encienda el GPS e intente nuevamente.");
-                      //this.errorGPSDisabedExecuted = true;
-                      /* }*/
-                      console.log('Error when starting positioning.', err);
-                      const message = `Error when starting positioning. ${errorMessage}`;
-                      this.presentToast(message, 'bottom', null);
-                    }
-                  );
-                } else {
-                  this.stopPositioning(loadingIndoorPositioning);
-                  const message = `You must have the location permission granted for positioning.`;
-                  this.presentToast(message, 'bottom', null);
-                }
-              })
-              .catch((error) => {
-                //this.hideLoading(loadingIndoorPositioning);
-                console.log(error);
-                this.stopPositioning(loadingIndoorPositioning);
-                //timer = 0;
-                const message = `Debe activar el gps y el bluetooth para el posicionamiento indoor . ${error}`;
-                //const message = `Error when requesting for location permissions. ${error}`
-                this.presentToast(message, 'bottom', null);
-              });
+            // let loadingIndoorPositioning;
+            // // let timer;
+            // // this.timerTenSecondsExecuted = false;
+            // // this.errorGPSDisabedExecuted = false;
+            // this.permissionsService
+            //   .checkLocationPermissions()
+            //   .then((permission) => {
+            //     console.log('Location permission?', permission);
+            //     if (permission) {
+            //       if (this.positioning == true) {
+            //         const message = 'Position listener is already enabled.';
+            //         this.presentToast(message, 'bottom', null);
+            //         return;
+            //       }
+            //       if (!this.map) {
+            //         const message =
+            //           'The map must be visible in order to launch the positioning';
+            //         this.presentToast(message, 'bottom', null);
+            //         return;
+            //       }
+            //       loadingIndoorPositioning = this.createLoading(
+            //         'Cargando posición indoor...'
+            //       );
+            //       loadingIndoorPositioning.present();
+            //       this.createPositionMarker();
+            //       this.currentWorkspace.positioning.startPositioning(
+            //         this,
+            //         () => {}
+            //       );
+            //     } else {
+            //       this.stopPositioning(loadingIndoorPositioning);
+            //       const message = `You must have the location permission granted for positioning.`;
+            //       this.presentToast(message, 'bottom', null);
+            //     }
+            //   })
+            //   .catch((error) => {
+            //     //this.hideLoading(loadingIndoorPositioning);
+            //     console.log(error);
+            //     this.stopPositioning(loadingIndoorPositioning);
+            //     //timer = 0;
+            //     const message = `Debe activar el gps y el bluetooth para el posicionamiento indoor . ${error}`;
+            //     //const message = `Error when requesting for location permissions. ${error}`
+            //     this.presentToast(message, 'bottom', null);
+            //   });
           }
           /*FIN REPETIR CODIGO STARTW*/
+          this.startPositioning();
         });
       }
     };
@@ -2502,85 +2455,130 @@ export class PositioningPage {
 
           loadingIndoorPositioning.present();
           this.createPositionMarker();
-          const locationOptions = this.mountLocationOptions();
-          // Set callback and starts listen onLocationChanged event
-          // More details in http://developers.situm.es/sdk_documentation/cordova/jsdoc/1.3.10/symbols/Situm.html#.startPositioning
-          //timer = setTimeout(() => this.resetPositioning(loadingIndoorPositioning), 10000);
 
-          cordova.plugins.Situm.startPositioning(
-            locationOptions,
-            (res: any) => {
-              this.positioning = true;
-              this.currentPosition = res;
-              if (!this.currentPosition || !this.currentPosition.coordinate)
-                return;
-              let position = this.mountPositionCoords(this.currentPosition);
+          console.log(this.currentWorkspace);
 
-              // Update the navigation
-              if (this.navigating) this.updateNavigation(this.currentPosition);
-              let iconPosition: MarkerIcon = {
-                size: { height: 44, width: 44 },
-              };
-              iconPosition.url = 'assets/img/finalFootPrint.png';
+          this.currentWorkspace.positioning.startPositioning(this, () => {
+            // Start counting time
+            loadingIndoorPositioning.dismiss();
 
-              this.marker.setIcon(iconPosition);
-              this.marker.setPosition(position);
-              this.hideLoading(loadingIndoorPositioning);
-              this.detector.detectChanges();
+            if (
+              this.hasGame &&
+              this.currentWorkspace.status.idStatus == 'VersionFinalPublica'
+            ) {
+              this.gameService.getMarkedPois().subscribe((pois) => {
+                this.markedPois = pois;
 
-              // Start counting time
-              if (
-                this.hasGame &&
-                this.currentWorkspace.status.idStatus == 'VersionFinalPublica'
-              ) {
-                this.gameService.getMarkedPois().subscribe((pois) => {
-                  this.markedPois = pois;
+                this.destroyAllMarkers();
+                this.dibujarMarcadoresCorrespondientes(true);
+              });
 
-                  this.destroyAllMarkers();
-                  this.dibujarMarcadoresCorrespondientes(true);
-                });
-
-                if (this.isFreeGame)
-                  this.questionService
-                    .getAllQuestions(this.currentWorkspace.idWorkspace)
-                    .pipe(take(1))
-                    .subscribe((q) => {
-                      this.questions = q;
-                      if (!this.currentWorkspace.configuration.rotate) {
-                        this.allPois.map((p, i) => {
-                          p.question = q[i];
-                        });
-                      }
-                    });
-
-                this.gameService
-                  .startGame(
-                    this.allPois.length,
-                    this.currentWorkspace,
-                    this.userLogged.uid
-                  )
-                  .takeUntil(this.cancelSubscription)
-                  .subscribe((time) => {
-                    this.time = time;
-                    this.detector.detectChanges();
+              if (this.isFreeGame)
+                this.questionService
+                  .getAllQuestions(this.currentWorkspace.idWorkspace)
+                  .pipe(take(1))
+                  .subscribe((q) => {
+                    this.questions = q;
+                    if (!this.currentWorkspace.configuration.rotate) {
+                      this.allPois.map((p, i) => {
+                        p.question = q[i];
+                      });
+                    }
                   });
-              }
 
-              //this.mostrarPosicionActual(res);
-            },
-            (err: any) => {
-              const reason = err.match('reason=(.*),');
-              let errorMessage = reason ? reason[1] : err;
-              this.stopPositioning(loadingIndoorPositioning);
-              /*if (this.timerTenSecondsExecuted == false) {*/
-              //this.alertText("No se pudo posicionar.", "Encienda el GPS e intente nuevamente.");
-              //this.errorGPSDisabedExecuted = true;
-              /* }*/
-              console.log('Error when starting positioning.', err);
-              const message = `Error when starting positioning. ${errorMessage}`;
-              this.presentToast(message, 'bottom', null);
+              this.gameService
+                .startGame(
+                  this.allPois.length,
+                  this.currentWorkspace,
+                  this.userLogged.uid
+                )
+                .takeUntil(this.cancelSubscription)
+                .subscribe((time) => {
+                  this.time = time;
+                  this.detector.detectChanges();
+                });
             }
-          );
+          });
+
+          // const locationOptions = this.mountLocationOptions();
+          // // Set callback and starts listen onLocationChanged event
+          // // More details in http://developers.situm.es/sdk_documentation/cordova/jsdoc/1.3.10/symbols/Situm.html#.startPositioning
+          // //timer = setTimeout(() => this.resetPositioning(loadingIndoorPositioning), 10000);
+
+          // cordova.plugins.Situm.startPositioning(
+          //   locationOptions,
+          //   (res: any) => {
+          //     this.positioning = true;
+          //     this.currentPosition = res;
+          //     if (!this.currentPosition || !this.currentPosition.coordinate)
+          //       return;
+          //     let position = this.mountPositionCoords(this.currentPosition);
+
+          //     // Update the navigation
+          //     if (this.navigating) this.updateNavigation(this.currentPosition);
+          //     let iconPosition: MarkerIcon = {
+          //       size: { height: 44, width: 44 },
+          //     };
+          //     iconPosition.url = 'assets/img/finalFootPrint.png';
+
+          //     this.marker.setIcon(iconPosition);
+          //     this.marker.setPosition(position);
+          //     this.hideLoading(loadingIndoorPositioning);
+          //     this.detector.detectChanges();
+
+          //     // Start counting time
+          //     if (
+          //       this.hasGame &&
+          //       this.currentWorkspace.status.idStatus == 'VersionFinalPublica'
+          //     ) {
+          //       this.gameService.getMarkedPois().subscribe((pois) => {
+          //         this.markedPois = pois;
+
+          //         this.destroyAllMarkers();
+          //         this.dibujarMarcadoresCorrespondientes(true);
+          //       });
+
+          //       if (this.isFreeGame)
+          //         this.questionService
+          //           .getAllQuestions(this.currentWorkspace.idWorkspace)
+          //           .pipe(take(1))
+          //           .subscribe((q) => {
+          //             this.questions = q;
+          //             if (!this.currentWorkspace.configuration.rotate) {
+          //               this.allPois.map((p, i) => {
+          //                 p.question = q[i];
+          //               });
+          //             }
+          //           });
+
+          //       this.gameService
+          //         .startGame(
+          //           this.allPois.length,
+          //           this.currentWorkspace,
+          //           this.userLogged.uid
+          //         )
+          //         .takeUntil(this.cancelSubscription)
+          //         .subscribe((time) => {
+          //           this.time = time;
+          //           this.detector.detectChanges();
+          //         });
+          //     }
+
+          //     //this.mostrarPosicionActual(res);
+          //   },
+          //   (err: any) => {
+          //     const reason = err.match('reason=(.*),');
+          //     let errorMessage = reason ? reason[1] : err;
+          //     this.stopPositioning(loadingIndoorPositioning);
+          //     /*if (this.timerTenSecondsExecuted == false) {*/
+          //     //this.alertText("No se pudo posicionar.", "Encienda el GPS e intente nuevamente.");
+          //     //this.errorGPSDisabedExecuted = true;
+          //     /* }*/
+          //     console.log('Error when starting positioning.', err);
+          //     const message = `Error when starting positioning. ${errorMessage}`;
+          //     this.presentToast(message, 'bottom', null);
+          //   }
+          // );
         } else {
           this.stopPositioning(loadingIndoorPositioning);
           const message = `You must have the location permission granted for positioning.`;
@@ -2643,20 +2641,21 @@ export class PositioningPage {
       this.hideLoading(loading);
       return;
     }
-    cordova.plugins.Situm.stopPositioning(() => {
+
+    let res = this.currentWorkspace.positioning.stopPositioning(this);
+    if (res) {
       if (this.marker) this.marker.remove();
       if (this.polyline) {
         this.polyline.remove();
         this.route = null;
       }
-      this.positioning = false;
-      this.detector.detectChanges();
-      this.hideLoading(loading);
-
       if (this.hasGame) {
         this.endGame();
       }
-    });
+      this.positioning = false;
+      this.detector.detectChanges();
+      this.hideLoading(loading);
+    }
   }
 
   /*private showRoute() {
