@@ -451,8 +451,6 @@ export class PositioningPage {
       }
 
       if (this.hasGame && this.isPublicVersion) {
-        console.log('user', this.userLogged);
-        console.log('workspace', this.currentWorkspace);
         this.gameService
           .getScoresForWorkspace(this.currentWorkspace)
           .pipe(
@@ -464,8 +462,20 @@ export class PositioningPage {
             )
           )
           .subscribe((value) => {
-            this.hasPlayed = value;
-            this.welcomeAlert(value);
+            if (
+              value &&
+              this.currentWorkspace.idOwner === this.userLogged.uid
+            ) {
+              this.gameService
+                .deleteScore(this.currentWorkspace, this.userLogged.uid)
+                .then(() => {
+                  this.hasPlayed = false;
+                  this.welcomeAlert(false);
+                });
+            } else {
+              this.hasPlayed = value;
+              this.welcomeAlert(value);
+            }
           });
       }
 

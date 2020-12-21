@@ -54,6 +54,24 @@ export class GameService {
       .pipe(map((value) => (!!value ? true : false)));
   }
 
+  public deleteScore(workspace: Workspace, userId: string) {
+    return new Promise<boolean>((result) => {
+      this.angularfirebaseDB.database
+        .ref(`${this.tabla}/${workspace.idWorkspace}/${userId}`)
+        .set(null)
+        .then(
+          (resolve) => {
+            this.storage.remove(this.storeId);
+            this.reset();
+            result(true);
+          },
+          (reject) => {
+            result(false);
+          }
+        );
+    });
+  }
+
   public getScoresForWorkspace(workspace: Workspace): Observable<Score[]> {
     return this.angularfirebaseDB
       .list<Score>(`${this.tabla}/${workspace.idWorkspace}`)
@@ -156,7 +174,6 @@ export class GameService {
 
     // Increase points if response is correct
     if (question.type === 'Closed') {
-      console.log('closed', poi, response);
       if (question.correctAnwser.toLowerCase() === response.toLowerCase()) {
         this.increaseScore();
         correct = true;
@@ -164,7 +181,6 @@ export class GameService {
     }
 
     if (question.type === 'MultipleChoice') {
-      console.log(response);
       if (response) {
         this.increaseScore();
         correct = true;
@@ -172,10 +188,7 @@ export class GameService {
     }
 
     if (question.type === 'TrueFalse') {
-      console.log(response == Boolean(question.trueFalseAnwser));
-      console.log(response);
       console.log(Boolean(question.trueFalseAnwser));
-      console.log(question);
 
       if (response === Boolean(question.trueFalseAnwser)) {
         this.increaseScore();
@@ -192,7 +205,6 @@ export class GameService {
       pois: [...currentPois, { poi, response: correct, question }],
     });
 
-    console.log('next', [...currentPois, { poi, response: correct, question }]);
     this.markedPoi.next([...currentPois, { poi, response: correct, question }]);
 
     // Have completed all pois
@@ -202,15 +214,12 @@ export class GameService {
   };
 
   increaseScore(): void {
-    console.log(this.workspace.configuration.score);
-
     this.score += Number(this.workspace.configuration.score) || 0;
   }
 
   reset(): void {
     this.score = 0;
     this.time = 0;
-
     this.markedPoi.next([]);
   }
 
