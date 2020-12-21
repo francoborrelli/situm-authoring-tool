@@ -85,18 +85,18 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-label>Falso</ion-label>
-        <ion-radio value="false"></ion-radio>
-      </ion-item>
-
-      <ion-item>
         <ion-label>Verdadero</ion-label>
         <ion-radio value="true"></ion-radio>
       </ion-item>
 
+      <ion-item>
+        <ion-label>Falso</ion-label>
+        <ion-radio value="false"></ion-radio>
+      </ion-item>
+
       <ion-item
         style="padding-left: 0px"
-        *ngIf="newQuestion.type === 'TrueFalse'"
+        *ngIf="newQuestion.type === 'TrueFalse' && newQuestion.trueFalseAnwser === 'false'"
       >
         <ion-label
           style="color: #1576c9; font-size: 16px"

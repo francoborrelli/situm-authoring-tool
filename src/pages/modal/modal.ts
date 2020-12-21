@@ -23,6 +23,7 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner'; //lee QR
 import { GameService } from '../../services/game.service';
 import { environment } from '../../env/environment';
 import { NuevoQuestionPoiPage } from '../nuevoQuestionPoi/nuevoQuestionPoi';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 
 @Component({
   selector: 'page-modal',
@@ -64,6 +65,7 @@ export class ModalContentPage {
     private qrScanner: QRScanner,
     private zone: NgZone,
     public events: Events,
+    private camera: Camera,
     private navCtrl: NavController,
     public loadingCtrl: LoadingController,
     private gameService: GameService
@@ -115,6 +117,27 @@ export class ModalContentPage {
 
   dismiss() {
     this.viewCtrl.dismiss();
+  }
+
+  public tomarFoto() {
+    const options: CameraOptions = {
+      quality: 60,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE,
+      targetWidth: 800,
+      targetHeight: 600,
+    };
+    this.camera.getPicture(options).then(
+      (imageData) => {
+        // imageData is either a base64 encoded string or a file URI
+        // If it's base64:
+        this.poi.infoHtml = 'data:image/jpeg;base64,' + imageData;
+      },
+      (err) => {
+        // Handle error
+      }
+    );
   }
 
   deletePoi() {
