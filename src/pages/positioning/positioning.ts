@@ -476,6 +476,20 @@ export class PositioningPage {
               this.hasPlayed = value;
               this.welcomeAlert(value);
             }
+
+            if (this.positioning) {
+              this.gameService
+                .startGame(
+                  this.allPois.filter((a) => a.visible).length,
+                  this.currentWorkspace,
+                  this.userLogged.uid
+                )
+                .takeUntil(this.cancelSubscription)
+                .subscribe((time) => {
+                  this.time = time;
+                  this.detector.detectChanges();
+                });
+            }
           });
       }
 
@@ -2090,9 +2104,6 @@ export class PositioningPage {
 
   async changeWorkspaceStatus(newStatusString) {
     if (this.isFreeGame) {
-      console.log(this.questions.length);
-      console.log(this.allPois.length);
-
       if (this.questions.length < this.allPois.length) {
         let alert = this.alertCtrl.create({
           title: 'No puedes cambiar de estado',
@@ -2116,6 +2127,8 @@ export class PositioningPage {
 
     if (newStatusString == 'VersionFinalPublica') {
       this.isFinalMode = true;
+      this.detector.detectChanges();
+
       //LO ESTOY INTENTANDO CERRAR
       let modalWorkspaceRelease = this.modalCtrl.create(ModalWorkspaceRelease, {
         workspace: this.currentWorkspace,
@@ -2152,6 +2165,38 @@ export class PositioningPage {
                 this.currentWorkspace.strategyToShowInformationPoIQR =
                   strategies.estrategiaSeleccionadaParaMostrarInformacionPOIQR;
                 this.exportQRImages();
+
+                if (this.hasGame) {
+                  this.gameService
+                    .getScoresForWorkspace(this.currentWorkspace)
+                    .pipe(
+                      take(1),
+                      map((response) =>
+                        response.find((s) => s.user.uid === this.userLogged.uid)
+                          ? true
+                          : false
+                      )
+                    )
+                    .subscribe((value) => {
+                      if (
+                        value &&
+                        this.currentWorkspace.idOwner === this.userLogged.uid
+                      ) {
+                        this.gameService
+                          .deleteScore(
+                            this.currentWorkspace,
+                            this.userLogged.uid
+                          )
+                          .then(() => {
+                            this.hasPlayed = false;
+                            this.welcomeAlert(false);
+                          });
+                      } else {
+                        this.hasPlayed = value;
+                        this.welcomeAlert(value);
+                      }
+                    });
+                }
               }
             });
         } else {
@@ -2489,16 +2534,18 @@ export class PositioningPage {
                   .pipe(take(1))
                   .subscribe((q) => {
                     this.questions = q;
-                    if (!this.currentWorkspace.configuration.rotate) {
-                      this.allPois.map((p, i) => {
-                        p.question = q[i];
-                      });
+                    if (this.currentWorkspace.configuration.rotate !== 'true') {
+                      this.allPois
+                        .filter((a) => a.visible)
+                        .forEach((p, i) => {
+                          p.question = q[i];
+                        });
                     }
                   });
 
               this.gameService
                 .startGame(
-                  this.allPois.length,
+                  this.allPois.filter((a) => a.visible).length,
                   this.currentWorkspace,
                   this.userLogged.uid
                 )
@@ -2906,13 +2953,13 @@ export class PositioningPage {
           }
 
           if (question.type === 'MultipleChoice') {
-            if (Boolean(value)) {
+            if (value == 'true') {
               isCorrect = true;
             }
           }
 
           if (question.type === 'TrueFalse') {
-            if (Boolean(value) == Boolean(question.trueFalseAnwser)) {
+            if (value == question.trueFalseAnwser) {
               isCorrect = true;
             }
           }
@@ -2920,12 +2967,20 @@ export class PositioningPage {
           const hasPoint = this.currentWorkspace.configuration.showScore;
           const points = this.currentWorkspace.configuration.score;
 
-          const correctSubTitle = `Tu respuesta es correcta${
+          let correctSubTitle = `Tu respuesta es correcta${
             hasPoint ? `, has sumado ${points} puntos.` : '.'
           }`;
 
+          if (
+            question.type === 'MultipleChoice' &&
+            value == 'false' &&
+            isCorrect
+          ) {
+            correctSubTitle += ` La respuesta correcta es: "${question.correctAnwserText}".`;
+          }
+
           let correctAnswer = '';
-          switch (question) {
+          switch (question.type) {
             case 'TrueFalse':
               correctAnswer = question.correctAnwserText || '';
               break;
@@ -2952,7 +3007,8 @@ export class PositioningPage {
             console.log('all', this.allPois);
             console.log('marked', this.markedPois);
             if (
-              this.allPois.length === this.markedPois.length &&
+              this.allPois.filter((a) => a.visible).length ===
+                this.markedPois.length &&
               !this.isModalOpen
             ) {
               this.isModalOpen = true;
@@ -2962,16 +3018,17 @@ export class PositioningPage {
           });
         }
 
-        if (this.hasGame) {
-          if (
-            this.allPois.length === this.markedPois.length &&
-            !this.isModalOpen
-          ) {
-            this.isModalOpen = true;
-            this.openEndModal();
-            this.stopPositioning(null);
-          }
-        }
+        // if (this.hasGame) {
+        //   if (
+        //     this.allPois.filter((a) => a.visible).length ===
+        //       this.markedPois.length &&
+        //     !this.isModalOpen
+        //   ) {
+        //     this.isModalOpen = true;
+        //     this.openEndModal();
+        //     this.stopPositioning(null);
+        //   }
+        // }
       });
       modalDetallePoi.present();
     } //SI NO ES UNDEFINED EL ELEMENTO (POR EJEMPLO SI ERA LA POSICION ACTUAL)
@@ -3192,7 +3249,8 @@ export class PositioningPage {
     modalEndGame.present();
 
     modalEndGame.onDidDismiss(() => {
-      this.hasPlayed = true;
+      if (this.currentWorkspace.idOwner !== this.userLogged.uid)
+        this.hasPlayed = true;
       this.endGame();
     });
   }
@@ -3293,6 +3351,11 @@ export class PositioningPage {
     OpenConfiguration.onDidDismiss((workspace) => {
       if (workspace) {
         this.currentWorkspace = workspace;
+
+        if (workspace.configuration.type !== 'free') {
+          this.iconAddUserColour = 'assets/img/addQuestionPOI.png';
+        }
+        this.detector.detectChanges();
       }
     });
     OpenConfiguration.present();

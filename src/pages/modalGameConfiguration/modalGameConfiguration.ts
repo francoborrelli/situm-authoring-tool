@@ -7,6 +7,7 @@ import {
   LoadingController,
   Keyboard,
   ToastController,
+  Events,
 } from 'ionic-angular';
 
 import {
@@ -47,6 +48,7 @@ export class ModalGameConfiguration {
     public toastController: ToastController,
     private loadingCtrl: LoadingController,
     private keyboard: Keyboard,
+    private events: Events,
     private workspaceService: WorkspaceService
   ) {
     this.initial = this.navParams.get('initial');

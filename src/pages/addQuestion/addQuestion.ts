@@ -306,7 +306,8 @@ export class AddQuestion {
       return (
         this.newQuestion.options &&
         this.newQuestion.options.length >= 2 &&
-        this.newQuestion.options.every((e) => !!e.text)
+        this.newQuestion.options.every((e) => !!e.text) &&
+        this.newQuestion.options.some((e) => !!e.correct)
       );
     }
 

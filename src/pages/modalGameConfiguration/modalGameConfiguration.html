@@ -56,12 +56,19 @@
           color="myBlueColour"
           style="color: #1576c9; font-size: 16px"
           stacked
-          >Rotar preguntas durante el juego</ion-label
+          >Estrategia de asignación</ion-label
         >
-        <ion-toggle
+        <ion-select
           [disabled]="isFinalMode"
+          style="max-width: 100%"
+          placeholder="Seleccione"
+          cancelText="Cancelar"
           [(ngModel)]="configuration.rotate"
-        ></ion-toggle>
+          class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
+        >
+          <ion-option value="false"><p>Asignación Fija.</p></ion-option>
+          <ion-option value="true"> Asignación al acceder </ion-option>
+        </ion-select>
       </ion-item>
 
       <div style="width: 100%; border-bottom: 1px solid #e6d8d8"></div>
@@ -220,7 +227,7 @@
           ion-button
           color="myBlueColour"
           [disabled]="
-          !configuration.type || (configuration.showScore && !configuration.score)|| (configuration.showCode && !configuration.code)
+          !configuration.type || (configuration.showScore && !configuration.score)|| (configuration.showCode && !configuration.code) || (configuration.type === 'free' && !configuration.rotate)
         "
           (click)="save()"
         >

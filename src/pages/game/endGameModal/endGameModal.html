@@ -9,9 +9,9 @@
           <span *ngIf="hasScore">
             Has obtenido
             <b>{{ points }} puntos</b>
-            <span> en <b>{{ time }} segundos</b></span>
+            <span *ngIf="hasTime"> en <b>{{ time }} segundos</b></span>
+            .
           </span>
-          .
         </p>
 
         <hr />

@@ -82,12 +82,17 @@
         <p *ngIf="poi.question">
           <b>Tipo de Pregunta: </b>{{ poi.question.type === 'TrueFalse' ?
           'Verdadero/Falso' : poi.question.type === 'MultipleChoice' ? 'Multiple
-          Choice' : 'Pregunta Cerrada' }}
+          Choice' : 'Ingreso de Respuesta' }}
         </p>
 
         <p *ngIf="poi.question">
           <b>Respuesta esperada: </b>
           {{expectedAnswer}}
+        </p>
+
+        <p *ngIf="poi.question && poi.question.trueFalseAnwser == 'false'">
+          <b>Respuesta Correcta: </b>
+          {{poi.question.correctAnwserText}}
         </p>
 
         <!-- final user view -->

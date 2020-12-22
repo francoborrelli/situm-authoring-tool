@@ -510,7 +510,9 @@ export class ModalContentPage {
     if (this.poi.question) {
       switch (this.poi.question.type) {
         case 'TrueFalse':
-          return this.poi.question.trueFalseAnwser ? 'Verdadero' : 'Falso';
+          return this.poi.question.trueFalseAnwser == 'true'
+            ? 'Verdadero'
+            : 'Falso';
         case 'MultipleChoice':
           return this.poi.question.options.filter((a) => a.correct)[0].text;
         case 'Closed':

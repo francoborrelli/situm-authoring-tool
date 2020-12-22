@@ -8,10 +8,10 @@
     <button ion-button menuToggle icon-only>
       <ion-icon color="changeableColour" name="menu"></ion-icon>
     </button>
-    <ion-title *ngIf="isFinalMode" color="white"
+    <ion-title *ngIf="isPublicVersion" color="white"
       >{{ currentWorkspace.name }}</ion-title
     >
-    <ion-title *ngIf="!isFinalMode" color="white">Authoring Tool</ion-title>
+    <ion-title *ngIf="!isPublicVersion" color="white">Authoring Tool</ion-title>
     <ion-buttons end>
       <ion-label
         style="width: 30% !important"
@@ -341,7 +341,7 @@
             *ngIf="
                 isCurrentWorkspaceOwner  &&
                 currentFloor &&
-                !isFinalMode &&
+                !isPublicVersion &&
                 mustShowAddPoiButton && currentWorkspace.configuration && currentWorkspace.configuration.type === 'free'
               "
             (click)="closeFab(fab); openQuestionsModal()"

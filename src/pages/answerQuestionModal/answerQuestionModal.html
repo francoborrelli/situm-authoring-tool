@@ -1,99 +1,101 @@
 <ion-card scrollY="true">
-  <div *ngIf="poi.infoHtml">
-    <img [src]="poi.infoHtml" />
-    <ion-fab right top #fab disabled>
-      <button ion-fab *ngIf="poi.infoHtml" color="white">
-        <img style="width: 44px; height: 44px" src="{{ icon }}" />
-      </button>
-    </ion-fab>
-  </div>
-
   <ion-card-content>
-    <div>
-      <ion-card-title> {{ question.question }} </ion-card-title>
+    <ion-scroll scrollY="true" style="min-height: 75vh">
+      <div>
+        <ion-card-title> {{ question.question }} </ion-card-title>
 
-      <!-- final user view -->
-
-      <ion-grid *ngIf="question.type === 'TrueFalse'">
-        <ion-row>
-          <ion-col col-6>
-            <button
-              ion-button
-              small
-              icon-start
-              round
-              item-end
-              (click)="saveAnswer(true)"
-              [outline]="!clicked || !answer"
-              style="margin-left: 20%; margin-right: 20%; width: 60%"
-            >
-              Verdadero
+        <div *ngIf="poi.infoHtml">
+          <img [src]="poi.infoHtml" />
+          <ion-fab right top #fab disabled>
+            <button ion-fab *ngIf="poi.infoHtml" color="white">
+              <img style="width: 44px; height: 44px" src="{{ icon }}" />
             </button>
-          </ion-col>
-          <ion-col col-6>
-            <button
-              ion-button
-              small
-              round
-              icon-start
-              item-end
-              (click)="saveAnswer(false)"
-              [outline]="!clicked || answer"
-              style="margin-left: 20%; margin-right: 20%; width: 60%"
-            >
-              Falso
-            </button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+          </ion-fab>
+        </div>
 
-      <ion-grid *ngIf="question.type === 'MultipleChoice'">
-        <ion-row>
-          <ion-col col-12 *ngFor="let option of question.options">
-            <button
-              ion-button
-              small
-              icon-start
-              item-end
-              round
-              [outline]="clicked !== option.text"
-              (click)="saveAnswer(option.correct, option.text)"
-              style="margin-left: 20%; margin-right: 20%; width: 60%"
-            >
-              {{option.text}}
-            </button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+        <!-- final user view -->
 
-      <ion-grid *ngIf="question.type === 'Closed'">
-        <ion-item>
-          <ion-label color="primary" stacked>Respuesta</ion-label>
-          <ion-input
-            type="text"
-            [(ngModel)]="userText"
-            placeholder="respuesta"
-          ></ion-input>
-        </ion-item>
-      </ion-grid>
+        <ion-grid *ngIf="question.type === 'TrueFalse'">
+          <ion-row>
+            <ion-col col-6>
+              <button
+                ion-button
+                small
+                icon-start
+                round
+                item-end
+                (click)="saveAnswer('true')"
+                [outline]="!clicked || answer !== 'true'"
+                style="margin-left: 20%; margin-right: 20%; width: 60%"
+              >
+                Verdadero
+              </button>
+            </ion-col>
+            <ion-col col-6>
+              <button
+                ion-button
+                small
+                round
+                icon-start
+                item-end
+                (click)="saveAnswer('false')"
+                [outline]="!clicked || answer !== 'false'"
+                style="margin-left: 20%; margin-right: 20%; width: 60%"
+              >
+                Falso
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
 
-      <ion-grid>
-        <ion-row>
-          <ion-col col-12>
-            <button
-              ion-button
-              small
-              icon-start
-              item-end
-              (click)="sendAnswer()"
-              [disabled]="!answer && !userText && !clicked"
-              style="margin-left: 20%; margin-right: 20%; width: 60%"
-            >
-              Confirmar
-            </button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+        <ion-grid *ngIf="question.type === 'MultipleChoice'">
+          <ion-row>
+            <ion-col col-12 *ngFor="let option of question.options">
+              <button
+                ion-button
+                small
+                icon-start
+                item-end
+                round
+                [outline]="clicked !== option.text"
+                (click)="saveAnswer(option.correct, option.text)"
+                style="margin-left: 20%; margin-right: 20%; width: 60%"
+              >
+                {{option.text}}
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="question.type === 'Closed'">
+          <ion-item>
+            <ion-label color="primary" stacked>Respuesta</ion-label>
+            <ion-input
+              type="text"
+              [(ngModel)]="userText"
+              placeholder="respuesta"
+            ></ion-input>
+          </ion-item>
+        </ion-grid>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <button
+                ion-button
+                small
+                icon-start
+                item-end
+                (click)="sendAnswer()"
+                [disabled]="!answer && !userText && !clicked"
+                style="margin-left: 20%; margin-right: 20%; width: 60%"
+              >
+                Confirmar
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-scroll>
   </ion-card-content>
 </ion-card>

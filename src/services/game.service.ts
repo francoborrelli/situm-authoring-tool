@@ -188,9 +188,7 @@ export class GameService {
     }
 
     if (question.type === 'TrueFalse') {
-      console.log(Boolean(question.trueFalseAnwser));
-
-      if (response === Boolean(question.trueFalseAnwser)) {
+      if (response == question.trueFalseAnwser) {
         this.increaseScore();
         correct = true;
       }
