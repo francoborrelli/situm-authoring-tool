@@ -2971,18 +2971,14 @@ export class PositioningPage {
             hasPoint ? `, has sumado ${points} puntos.` : '.'
           }`;
 
-          if (
-            question.type === 'MultipleChoice' &&
-            value == 'false' &&
-            isCorrect
-          ) {
-            correctSubTitle += ` La respuesta correcta es: "${question.correctAnwserText}".`;
+          if (question.type === 'TrueFalse' && value == 'false' && isCorrect) {
+            correctSubTitle = `${correctSubTitle} La respuesta correcta es: "${question.correctAnwserText}".`;
           }
 
           let correctAnswer = '';
           switch (question.type) {
             case 'TrueFalse':
-              correctAnswer = question.correctAnwserText || '';
+              correctAnswer = question.correctAnwserText || 'Verdadero';
               break;
             case 'MultipleChoice':
               correctAnswer =
