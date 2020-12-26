@@ -180,7 +180,7 @@ export class NuevoQuestionPoiPage {
     }
   }
 
-  scanToUseExistingQR() {
+  scanToUseExistingQR = () => {
     // Optionally request the permission early
     this.qrScanner
       .prepare()
@@ -198,16 +198,17 @@ export class NuevoQuestionPoiPage {
             document.getElementsByTagName('ion-modal')[0]
           );
           this.ionApp.style.opacity = '0';
-          this.pagenuevopoi.style.opacity = '0';
-          this.ionModal.style.opacity = '0';
+          if (this.pagenuevopoi) this.pagenuevopoi.style.opacity = '0';
+          if (this.ionModal) this.ionModal.style.opacity = '0';
           // camera permission was granted
           // start scanning
           let scanSub = this.qrScanner.scan().subscribe((text: string) => {
             //var splitted = text.split(" ", 3);
             //console.log(splitted);
             this.ionApp.style.opacity = '1';
-            this.pagenuevopoi.style.opacity = '1';
-            this.ionModal.style.opacity = '1';
+            if (this.ionModal) this.ionModal.style.opacity = '1';
+            if (this.pagenuevopoi) this.pagenuevopoi.style.opacity = '1';
+
             this.nuevoPoi.hasQRCode = true;
 
             this.nuevoPoi.QRCodeID = text.toString();
@@ -227,7 +228,7 @@ export class NuevoQuestionPoiPage {
         }
       })
       .catch((e: any) => console.log('Error is', e));
-  }
+  };
 
   inicializarSalidaHaciaAtras() {
     this.unregisterBackButtonAction = this.platform.registerBackButtonAction(
