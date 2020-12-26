@@ -2119,6 +2119,10 @@ export class PositioningPage {
           ],
         });
         alert.present();
+        this.currentWorkspace.status = this.getSelectedWorkspaceStatus(
+          this.lastKnownStatus.idStatus
+        );
+        this.detector.detectChanges();
         return false;
       }
     }
