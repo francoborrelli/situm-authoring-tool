@@ -132,6 +132,20 @@
         >
       </ion-item>
 
+      <ion-list *ngIf="mustShowSwitchPoiVisibility">
+        <ion-item>
+          <ion-icon ios="ios-eye" md="md-eye" item-start></ion-icon>
+          <ion-label>
+            <b>Pregunta visible:</b>
+          </ion-label>
+          <ion-checkbox
+            color="myBlueColour"
+            item-end
+            [(ngModel)]="newQuestion.visible"
+          ></ion-checkbox>
+        </ion-item>
+      </ion-list>
+
       <div style="text-align: center">
         <button ion-button color="danger" (click)="dismissWithoutSave()">
           Cancelar

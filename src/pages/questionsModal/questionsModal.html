@@ -17,6 +17,14 @@
           [color]="even? 'greyItemList' : 'whiteItemList'"
         >
           {{qs.question}}
+          <button
+            item-end
+            ion-button
+            [disabled]="true"
+            *ngIf="!qs.visible && mustShowSwitchPoiVisibility"
+          >
+            <ion-icon ios="ios-eye-off" md="md-eye-off"></ion-icon>
+          </button>
           <button item-end ion-button (click)="editQuestion(qs)">
             <ion-icon ios="ios-brush" md="md-brush"></ion-icon>
           </button>

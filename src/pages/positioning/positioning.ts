@@ -166,7 +166,7 @@ export class PositioningPage {
   private drawingMarkers;
   private iconAddUserColour;
   private iconAddQuestion;
-  private questions;
+  private questions = [] as any;
 
   private possiblesStatusesStrings = [
     'EdicionDelCreador',
@@ -445,7 +445,6 @@ export class PositioningPage {
         this.questionService
           .getAllQuestions(this.currentWorkspace.idWorkspace)
           .subscribe((q) => {
-            console.log(q);
             this.questions = q;
           });
       }
@@ -2104,7 +2103,10 @@ export class PositioningPage {
 
   async changeWorkspaceStatus(newStatusString) {
     if (this.isFreeGame) {
-      if (this.questions.length < this.allPois.length) {
+      if (
+        this.questions.filter((a) => a.visible).length <
+        this.allPois.filter((a) => a.visible).length
+      ) {
         let alert = this.alertCtrl.create({
           title: 'No puedes cambiar de estado',
           subTitle: 'Debe haber al menos una pregunta para cada lugar creado',
@@ -2531,15 +2533,18 @@ export class PositioningPage {
               if (this.isFreeGame)
                 this.questionService
                   .getAllQuestions(this.currentWorkspace.idWorkspace)
-                  .pipe(take(1))
                   .subscribe((q) => {
                     this.questions = q;
                     if (this.currentWorkspace.configuration.rotate !== 'true') {
-                      this.allPois
-                        .filter((a) => a.visible)
-                        .forEach((p, i) => {
-                          p.question = q[i];
-                        });
+                      let i = 0;
+                      this.pois.forEach((arrayByUser) => {
+                        arrayByUser
+                          .filter((a) => a.visible)
+                          .forEach((poi) => {
+                            poi.question = q[i];
+                            i = i + 1;
+                          });
+                      });
                     }
                   });
 
@@ -2913,7 +2918,11 @@ export class PositioningPage {
       const question = searchedPoi.question
         ? searchedPoi.question
         : this.questions
-        ? this.questions[Math.floor(Math.random() * this.questions.length)]
+        ? this.questions.filter((a) => a.visible)[
+            Math.floor(
+              Math.random() * this.questions.filter((a) => a.visible).length
+            )
+          ]
         : null;
 
       console.log({

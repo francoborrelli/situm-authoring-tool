@@ -316,7 +316,7 @@ export class NuevoQuestionPoiPage {
         this.scanToUseExistingQR(); //ALGUN QR QUE YA EXISTA (DEBERIA SER HASHEADO)
       }
       if (anElection == 'Nuevo QR') {
-        this.nuevoPoi.QRCodeID = this.nuevoPoi.poiName; //EL NOMBRE (DEBERIA SER HASHEADO)
+        this.nuevoPoi.QRCodeID = this.nuevoPoi.identifier; //EL NOMBRE (DEBERIA SER HASHEADO)
       }
       this.nuevoPoi.hasQRCode = true;
     }

@@ -58,9 +58,9 @@ export class Poi {
   asociatedTrigger: string;
   visible: boolean;
   options: any;
-    getAllPois(idWorkspace: number) {
-      throw new Error('Method not implemented.');
-    }
+  getAllPois(idWorkspace: number) {
+    throw new Error('Method not implemented.');
+  }
 }
 
 @Injectable()
@@ -211,6 +211,7 @@ export class PoisService {
           pagina.okEncrypt(base64EncodedQRImage, loading);
         },
         (err) => {
+          console.log(err);
           pagina.notOkEncrypt(loading, err);
         },
         options

@@ -36,8 +36,20 @@ export class QuestionsInformationModal {
     this.questionService
       .getAllQuestions(this.workspace.idWorkspace)
       .subscribe((questions) => {
+        console.log(questions);
         this.questions = questions;
       });
+  }
+
+  isOwner() {
+    return this.workspace.idOwner == this.user.uid;
+  }
+
+  get mustShowSwitchPoiVisibility() {
+    return (
+      this.isOwner() &&
+      this.workspace.status.idStatus === 'EdicionDelCreadorVersionFinal'
+    );
   }
 
   dismiss() {

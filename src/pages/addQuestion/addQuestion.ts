@@ -63,6 +63,7 @@ export class AddQuestion {
       this.newQuestion = this.navParams.get('question');
     } else {
       this.newQuestion = {
+        visible: true,
         id: new Date().getTime(),
         ...this.navParams.get('question'),
         options: [
@@ -101,6 +102,13 @@ export class AddQuestion {
       ...this.newQuestion.options,
       { name: '', correct: '' },
     ];
+  }
+
+  get mustShowSwitchPoiVisibility() {
+    return (
+      this.isOwner &&
+      this.workspace.status.idStatus === 'EdicionDelCreadorVersionFinal'
+    );
   }
 
   correctControl(control) {

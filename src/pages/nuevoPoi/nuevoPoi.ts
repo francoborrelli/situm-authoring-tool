@@ -58,7 +58,7 @@ export class NuevoPoiPage {
     this.nuevoPoi = this.navParams.get('nuevoPoi');
     this.workspace = this.navParams.get('workspace');
     this.loggedUser = this.navParams.get('loggedUser');
-    console.log(this.workspace);
+
     this.qrAutorizado = false;
     this.options = ['Usando WLAN', 'Nuevo QR', 'QR Existente'];
     this.qrOptionSelected = 'Usando WLAN';
@@ -250,14 +250,12 @@ export class NuevoPoiPage {
   }
 
   public acceptAddPoi() {
-    this.modelQRPoi = this.nuevoPoi.poiName;
+    this.modelQRPoi = this.nuevoPoi.identifier;
     let loading;
 
     if (this.isFreeGame) {
       this.nuevoPoi.poiName = 'Lugar';
     }
-
-    console.log(this.nuevoPoi);
 
     this.nuevoPoi.asociatedTrigger = this.qrOptionSelected; //Mecanismo de sensado asociado al POI
     if (this.nuevoPoi.hasQRCode) {
@@ -281,7 +279,7 @@ export class NuevoPoiPage {
         this.scanToUseExistingQR(); //ALGUN QR QUE YA EXISTA (DEBERIA SER HASHEADO)
       }
       if (anElection == 'Nuevo QR') {
-        this.nuevoPoi.QRCodeID = this.nuevoPoi.poiName; //EL NOMBRE (DEBERIA SER HASHEADO)
+        this.nuevoPoi.QRCodeID = this.nuevoPoi.identifier; //EL NOMBRE (DEBERIA SER HASHEADO)
       }
       this.nuevoPoi.hasQRCode = true;
     }
