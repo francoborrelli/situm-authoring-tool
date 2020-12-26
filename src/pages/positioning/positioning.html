@@ -360,6 +360,7 @@
               <b>Estado:</b>
             </ion-label>
             <ion-select
+              *ngIf="refreshed"
               class="selectPiso anchoTotal fondoBlanco alturaBotonFlotante"
               [(ngModel)]="currentWorkspace.status.idStatus"
               (ionChange)="changeWorkspaceStatus($event, fab)"

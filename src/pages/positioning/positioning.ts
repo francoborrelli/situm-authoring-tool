@@ -168,6 +168,8 @@ export class PositioningPage {
   private iconAddQuestion;
   private questions = [] as any;
 
+  public refreshed = true;
+
   private possiblesStatusesStrings = [
     'EdicionDelCreador',
     'EdicionColaborativa',
@@ -2119,10 +2121,18 @@ export class PositioningPage {
           ],
         });
         alert.present();
-        this.currentWorkspace.status = this.getSelectedWorkspaceStatus(
+        this.refreshed = false;
+        const lastStatus = this.getSelectedWorkspaceStatus(
           this.lastKnownStatus.idStatus
         );
-        this.detector.detectChanges();
+        this.currentWorkspace.status.idStatus = lastStatus.idStatus;
+        this.currentWorkspace.status = lastStatus;
+
+        setTimeout(() => {
+          this.refreshed = true;
+          this.detector.detectChanges();
+        }, 1);
+
         return false;
       }
     }
