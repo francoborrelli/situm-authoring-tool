@@ -274,12 +274,14 @@ export class MyApp {
 
   prepareWorkspacesStatusesAndKind(aWorkspaces) {
     aWorkspaces.forEach((ws) => {
-      let statusClassString = ws.status.idStatus;
-      let kindClassString = ws.kind.idKind;
-      let positioningClassString = ws.positioning.idPositioning;
-      ws.status = this.getCurrentStatus(statusClassString);
-      ws.kind = this.getKind(kindClassString);
-      ws.positioning = this.getPositioning(positioningClassString);
+      if (ws) {
+        let statusClassString = ws.status.idStatus;
+        let kindClassString = ws.kind.idKind;
+        let positioningClassString = ws.positioning.idPositioning;
+        ws.status = this.getCurrentStatus(statusClassString);
+        ws.kind = this.getKind(kindClassString);
+        ws.positioning = this.getPositioning(positioningClassString);
+      }
     });
   }
 
@@ -692,6 +694,11 @@ export class MyApp {
           this.prepareWorkspacesStatusesAndKind(
             this.myWorkSpacesAsCollaborator
           );
+
+          this.myWorkSpacesAsFinalUser.map((ws) => {
+            ws.positioning = this.getPositioning(ws.positioning.idPositioning);
+          });
+          // this.prepareWorkspacesStatusesAndKind(this.myWorkSpacesAsFinalUser);
           this.loadedResources = this.loadedResources + 1;
           this.hideLoadingResources();
         }

@@ -35,9 +35,18 @@ export class QuestionsInformationModal {
 
     this.questionService
       .getAllQuestions(this.workspace.idWorkspace)
-      .subscribe((questions) => {
+      .subscribe((questions: any[]) => {
         console.log(questions);
-        this.questions = questions;
+        console.log(this.user);
+        console.log(this.workspace);
+
+        if (this.isOwner()) {
+          this.questions = questions;
+        } else {
+          this.questions = questions.filter(
+            (q) => q.creator == this.user.email.split('@')[0]
+          );
+        }
       });
   }
 

@@ -521,6 +521,8 @@ export class PositioningPage {
         //SINO, DEBO BUSCAR MI COLOR ENTRE LOS DE LOS COLABORADORES PARA CREAR PoIs
         let collaborator;
 
+        this.iconAddQuestion = 'assets/img/questionMark.png';
+
         this.isCurrentWorkspaceOwner = false;
         collaborator = aWorkspace.collaborators.find(
           (col) => col.idCollaborator === this.userLogged.uid
@@ -536,6 +538,7 @@ export class PositioningPage {
         }
       }
       this.verMapaReal(this.currentWorkspace.building);
+
       this.initializeMustShowAddPoiButton(
         this.currentWorkspace.status.idStatus
       );
@@ -1294,6 +1297,11 @@ export class PositioningPage {
 
       this.pois.forEach((poisByUser) => {
         let poisByUserVisibles;
+
+        if (this.hasGame && !this.positioning) {
+          return;
+        }
+
         poisByUserVisibles = poisByUser.filter((pbu) => pbu.visible == true);
         marcadoresADibujar = marcadoresADibujar + poisByUserVisibles.length;
 
@@ -1698,6 +1706,8 @@ export class PositioningPage {
     loadingDrawingPois
   ) {
     arrayOfPoisByUser.forEach((aPoisByUser) => {
+      if (!aPoisByUser || !aPoisByUser.length) return;
+
       let stringCreator = aPoisByUser[0].creator;
       //let markersOfUserAux = new Array<Marker>();
       this.currentMarkersByCreator[stringCreator] = new Array<Marker>();
@@ -1718,6 +1728,14 @@ export class PositioningPage {
             // let color = this.currentWorkspace.applicationColour;
 
             let color = poi.colour;
+
+            if (this.hasGame) {
+              color = '#1576C9';
+            }
+
+            if (this.hasGame && !this.positioning) {
+              return;
+            }
 
             const item = this.markedPois.find(
               (r) => r.poi.identifier === poi.identifier
@@ -2502,6 +2520,7 @@ export class PositioningPage {
 
   private startPositioning() {
     let loadingIndoorPositioning;
+
     this.permissionsService
       .checkLocationPermissions()
       .then((permission) => {
@@ -2720,6 +2739,9 @@ export class PositioningPage {
 
     let res = this.currentWorkspace.positioning.stopPositioning(this);
     if (res) {
+      this.positioning = false;
+      this.detector.detectChanges();
+
       if (this.marker) this.marker.remove();
       if (this.polyline) {
         this.polyline.remove();
@@ -2728,7 +2750,7 @@ export class PositioningPage {
       if (this.hasGame) {
         this.endGame();
       }
-      this.positioning = false;
+
       this.detector.detectChanges();
       this.hideLoading(loading);
     }
