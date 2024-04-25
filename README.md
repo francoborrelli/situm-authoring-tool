@@ -1,17 +1,28 @@
-# Situm Cordova Getting Started
+# Situm Authoring tool
 
-NOTE: This app is only a use-case for testing purposes. It may not be up to date or optimized.
 
-- [Usage](#usage)
-- [Run Android version](#run-android-version)
-- [Run iOS version](#run-ios-version)
+![Ionic](https://img.shields.io/badge/Ionic-%233880FF.svg?style=for-the-badge&logo=Ionic&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white)
 
-## Requirements
+[![inciscos](https://img.shields.io/badge/doi-10.1109/INCISCOS49368.2019.00060-blue.svg)](https://ieeexplore.ieee.org/abstract/document/9052313)
+[![enfoque](https://img.shields.io/badge/doi-10.29019/enfoque.v11n1.586-blue.svg)](http://scielo.senescyt.gob.ec/scielo.php?pid=S1390-65422020000100001&script=sci_abstract&tlng=en)
 
-1. (Ionic)[https://ionicframework.com/docs/intro/cli]
-2. (Android Studio)[https://ionicframework.com/docs/developing/android]
+## 📄 Description
 
-## Usage
+> [!NOTE]  
+> This app is only a use-case for testing purposes. It may not be up to date or optimized.
+
+An authoring tool that allows creating context-aware games using Situm for indoor positioning.
+
+## 🛠️ Requirements
+
+[![Ionic](https://img.shields.io/badge/Ionic-%233880FF.svg?style=for-the-badge&logo=Ionic&logoColor=white)](https://ionicframework.com/docs/intro/cli)
+[![Android Studio](https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white)](https://ionicframework.com/docs/developing/android)
+![Xcode](https://img.shields.io/badge/Xcode-007ACC?style=for-the-badge&logo=Xcode&logoColor=white)
+
+## 🚀 Usage
 
 1. Ionic installation : https://ionicframework.com/docs/intro/installation/
 
@@ -35,7 +46,7 @@ So, `config.xml` file should contain one line like this:
 
     <plugin name="situm-cordova-plugin" spec="file:../situm-cordova-plugin" />
 
-## Firebase Configuration
+## ⚡ Firebase Configuration
 
 Firebase configuration file can be found it `src/firebaseConfig.ts`. In order to define a new firebase project you should go to https://console.firebase.google.com/ and:
 
@@ -45,13 +56,13 @@ Firebase configuration file can be found it `src/firebaseConfig.ts`. In order to
 
 - Copy the given credentials to `src/firebaseConfig.ts`.
 
-## Run Android version
+## 🤖 Run Android version
 
 - **Run from command line**: `$ ionic cordova run android -l --ssl`
 
 - **Run from Android Studio**: Go to plaftforms/android folder. Create android studio project and run `MainActivity` class
 
-## Run iOS version
+## 🍎 Run iOS version
 
 - **Run from command line**: `$ ionic cordova run ios`
 
