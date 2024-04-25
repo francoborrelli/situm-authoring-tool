@@ -67,3 +67,37 @@ Firebase configuration file can be found it `src/firebaseConfig.ts`. In order to
 - **Run from command line**: `$ ionic cordova run ios`
 
 - **Run from Xcode**: Go to platforms/ios folder and open `Situm Cordova Getting Started.xcworkspace`
+
+## 📲 Images
+
+<div align="center">
+    <table >
+     <tr>
+       <td>
+         <img src="images/1.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/2.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/3.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/4.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/5.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/6.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/7.jpg?raw=true"/>
+       </td>
+        <td>
+         <img src="images/8.jpg?raw=true"/>
+       </td>
+     </tr>
+    </table>
+    </div>
+
